@@ -1,10 +1,10 @@
 {
   "name": "gazette",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
-  "permissions": ["gazette.access"],
+  "permissions": ["gazette.access", "gazette.contributor", "gazette.author", "gazette.editor"],
   "navGroupLabel": "Gazette",
   "navEntries": [
     { "label": "Posts", "path": "/m/gazette/posts", "icon": "<path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>", "permission": "gazette.access" },
@@ -17,12 +17,9 @@
   "settingsTabs": [
     { "id": "gazette", "label": "Gazette", "permission": "gazette.access", "import": "./components/admin/GazetteSettingsTab", "component": "GazetteSettingsTab" }
   ],
-  "extensionPoints": [
-    { "point": "core.roles-page", "id": "gazette-roles", "import": "./components/admin/GazetteRolesSection", "component": "GazetteRolesSection" }
-  ],
   "requiredEnvVars": [],
   "cookieCategories": ["functional"],
-  "teardown": ["gz_post_tags", "gz_post_views", "gz_reactions", "gz_comments", "gz_posts", "gz_tags", "gz_series", "gz_author_profiles", "gz_settings", "gz_user_roles", "gz_post_templates"],
+  "teardown": ["gz_post_tags", "gz_post_views", "gz_reactions", "gz_comments", "gz_posts", "gz_tags", "gz_series", "gz_author_profiles", "gz_settings", "gz_post_templates"],
   "puckBlocks": [
     { "type": "GazetteFeed", "import": "./components/puck/GazetteFeedBlock", "component": "gazetteFeedPuckComponent", "rscComponent": "gazetteFeedPuckRscComponent" },
     { "type": "GazetteFeatured", "import": "./components/puck/GazetteFeaturedBlock", "component": "gazetteFeaturedPuckComponent", "rscComponent": "gazetteFeaturedPuckRscComponent" }

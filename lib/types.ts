@@ -2,9 +2,8 @@ export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'SCHEDULED'
 export type CommentStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type CommentsVisibility = 'PUBLIC' | 'MEMBERS_ONLY'
 export type CommentModeration = 'PRE' | 'POST'
-export type GazetteRole = 'GAZETTE_CONTRIBUTOR' | 'GAZETTE_AUTHOR' | 'GAZETTE_EDITOR'
 
- 
+
 export type PuckData = { root: { props?: Record<string, any> }; content: any[]; zones?: Record<string, any> }
 
 export type GazettePost = {
@@ -101,7 +100,8 @@ export type GazettePostTemplate = {
 }
 
 export type GazetteAccess = {
-  role: GazetteRole | null
   isEditor: boolean
+  isAuthor: boolean
+  isContributor: boolean
   isAdminUser: boolean
 }

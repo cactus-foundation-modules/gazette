@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
-import { getGazetteAccess } from '@/modules/gazette/lib/permissions'
+import { getGazetteAccess, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { listPostsAdmin, normaliseScheduledPosts, createPost, getTemplateById, getTagsForPosts } from '@/modules/gazette/lib/db'
 import { slugifyTitle, ensureUniquePostSlug } from '@/modules/gazette/lib/slug'
 import type { PostsTab } from '@/modules/gazette/lib/db'
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getGazetteAccess(user)
-  if (!access.role && !access.isAdminUser) return errorResponse('Forbidden', 403)
+  if (!canViewGazetteAdmin(access)) return errorResponse('Forbidden', 403)
 
   await normaliseScheduledPosts()
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getGazetteAccess(user)
-  if (!access.role && !access.isAdminUser) return errorResponse('Forbidden', 403)
+  if (!canViewGazetteAdmin(access)) return errorResponse('Forbidden', 403)
 
   const parsed = CreateBody.safeParse(await request.json())
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
-import { getGazetteAccess, canEditPost } from '@/modules/gazette/lib/permissions'
+import { getGazetteAccess, canEditPost, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { getPostById, createPost, updatePost, getTagIdsForPost, setPostTags } from '@/modules/gazette/lib/db'
 import { slugifyTitle, ensureUniquePostSlug } from '@/modules/gazette/lib/slug'
 
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getGazetteAccess(user)
-  if (!access.role && !access.isAdminUser) return errorResponse('Forbidden', 403)
+  if (!canViewGazetteAdmin(access)) return errorResponse('Forbidden', 403)
 
   const { id } = await params
   const source = await getPostById(id)

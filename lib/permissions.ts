@@ -1,21 +1,21 @@
-import { prisma } from '@/lib/db/prisma'
-import { isAdmin } from '@/lib/permissions/check'
+import { hasPermissions, isAdmin } from '@/lib/permissions/check'
 import type { SessionUser } from '@/lib/auth/session'
-import type { GazetteAccess, GazetteRole } from './types'
+import type { GazetteAccess } from './types'
 
 export async function getGazetteAccess(user: SessionUser): Promise<GazetteAccess> {
   const isAdminUser = isAdmin(user)
+  const perms = await hasPermissions(user, ['gazette.editor', 'gazette.author', 'gazette.contributor'])
 
-  const rows = await prisma.$queryRaw<Array<{ role: GazetteRole }>>`
-    SELECT "role" FROM "gz_user_roles" WHERE "user_id" = ${user.id} LIMIT 1
-  `
-  const role = rows[0]?.role ?? null
-
-  return { role, isEditor: isAdminUser || role === 'GAZETTE_EDITOR', isAdminUser }
+  return {
+    isAdminUser,
+    isEditor: isAdminUser || !!perms['gazette.editor'],
+    isAuthor: !!perms['gazette.author'],
+    isContributor: !!perms['gazette.contributor'],
+  }
 }
 
 export function canViewGazetteAdmin(a: GazetteAccess): boolean {
-  return a.isAdminUser || a.role !== null
+  return a.isEditor || a.isAuthor || a.isContributor
 }
 
 type PostOwnership = { authorId: string | null; status: string }
@@ -23,22 +23,16 @@ type PostOwnership = { authorId: string | null; status: string }
 export function canEditPost(a: GazetteAccess, userId: string, post: PostOwnership): boolean {
   if (a.isEditor) return true
   if (post.authorId !== userId) return false
-  if (a.role === 'GAZETTE_AUTHOR') return true
-  if (a.role === 'GAZETTE_CONTRIBUTOR') return post.status === 'DRAFT'
+  if (a.isAuthor) return true
+  if (a.isContributor) return post.status === 'DRAFT'
   return false
 }
 
 export function canPublishPost(a: GazetteAccess, userId: string, post: PostOwnership): boolean {
   if (a.isEditor) return true
-  return a.role === 'GAZETTE_AUTHOR' && post.authorId === userId
+  return a.isAuthor && post.authorId === userId
 }
 
 export function canDeletePost(a: GazetteAccess, userId: string, post: PostOwnership): boolean {
   return canEditPost(a, userId, post)
-}
-
-// Role assignment is admin-only (Decision 4) - intentionally does not accept
-// GazetteAccess/isEditor. Guard call sites with isAdmin(user) directly.
-export function isGazetteEditor(a: GazetteAccess): boolean {
-  return a.isEditor
 }

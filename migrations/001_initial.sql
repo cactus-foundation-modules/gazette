@@ -184,20 +184,6 @@ CREATE TABLE IF NOT EXISTS "gz_settings" (
 INSERT INTO "gz_settings" ("id") VALUES ('singleton') ON CONFLICT ("id") DO NOTHING;
 
 -- ---------------------------------------------------------------------------
--- Gazette roles (one per user; removed with user)
--- ---------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS "gz_user_roles" (
-    "user_id"     TEXT         NOT NULL,
-    -- 'GAZETTE_CONTRIBUTOR' | 'GAZETTE_AUTHOR' | 'GAZETTE_EDITOR'
-    "role"        TEXT         NOT NULL,
-    "assigned_by" TEXT,
-    "created_at"  TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "gz_user_roles_pkey" PRIMARY KEY ("user_id"),
-    CONSTRAINT "gz_user_roles_role_check" CHECK ("role" IN ('GAZETTE_CONTRIBUTOR','GAZETTE_AUTHOR','GAZETTE_EDITOR')),
-    CONSTRAINT "gz_user_roles_user_fk" FOREIGN KEY ("user_id") REFERENCES "User" ("id") ON DELETE CASCADE
-);
-
--- ---------------------------------------------------------------------------
 -- Post templates
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "gz_post_templates" (

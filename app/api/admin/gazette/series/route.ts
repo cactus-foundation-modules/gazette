@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
-import { getGazetteAccess } from '@/modules/gazette/lib/permissions'
+import { getGazetteAccess, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { listSeries, createSeries } from '@/modules/gazette/lib/db'
 import { slugifyTitle } from '@/modules/gazette/lib/slug'
 
@@ -10,7 +10,7 @@ export async function GET() {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getGazetteAccess(user)
-  if (!access.role && !access.isAdminUser) return errorResponse('Forbidden', 403)
+  if (!canViewGazetteAdmin(access)) return errorResponse('Forbidden', 403)
 
   const series = await listSeries()
   return NextResponse.json({ series })

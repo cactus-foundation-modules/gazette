@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client'
 import { PUBLIC_VISIBLE_SQL, EFFECTIVE_PUBLISHED_SQL } from './visibility'
 import type {
   GazettePost, GazettePostListItem, GazetteTag, GazetteTagWithCount, GazetteSeries,
-  GazetteAuthorProfile, GazetteComment, GazettePostTemplate, GazetteRole, PuckData,
+  GazetteAuthorProfile, GazetteComment, GazettePostTemplate, PuckData,
 } from './types'
 
 // ---------------------------------------------------------------------------
@@ -521,20 +521,30 @@ export async function upsertAuthorProfile(userId: string, fields: { bio?: string
   `
 }
 
-export type AuthorListItem = { userId: string; email: string; username: string; displayName: string | null; role: GazetteRole | null; postCount: number }
+export type AuthorListItem = { userId: string; email: string; username: string; displayName: string | null; role: string | null; postCount: number }
 
 export async function listAuthors(): Promise<AuthorListItem[]> {
-  const rows = await prisma.$queryRaw<AuthorListItem[]>`
+  const rows = await prisma.$queryRaw<Array<{
+    userId: string; email: string; username: string; displayName: string | null
+    isEditor: boolean; isAuthor: boolean; isContributor: boolean; postCount: number
+  }>>`
     SELECT u."id" as "userId", u."email", u."username", u."displayName",
-      ur."role" as "role", COUNT(p."id")::int as "postCount"
+      bool_or(rp."permissionKey" = 'gazette.editor') as "isEditor",
+      bool_or(rp."permissionKey" = 'gazette.author') as "isAuthor",
+      bool_or(rp."permissionKey" = 'gazette.contributor') as "isContributor",
+      COUNT(DISTINCT p."id")::int as "postCount"
     FROM "User" u
-    LEFT JOIN "gz_user_roles" ur ON ur."user_id" = u."id"
+    LEFT JOIN "RolePermission" rp ON rp."roleId" = u."roleId" AND rp."permissionKey" IN ('gazette.editor', 'gazette.author', 'gazette.contributor')
     LEFT JOIN "gz_posts" p ON p."author_id" = u."id"
-    WHERE ur."user_id" IS NOT NULL OR p."author_id" IS NOT NULL
-    GROUP BY u."id", ur."role"
+    WHERE rp."permissionKey" IS NOT NULL OR p."author_id" IS NOT NULL
+    GROUP BY u."id"
     ORDER BY u."displayName" ASC NULLS LAST, u."username" ASC
   `
-  return rows
+  return rows.map((r) => ({
+    userId: r.userId, email: r.email, username: r.username, displayName: r.displayName,
+    role: r.isEditor ? 'Editor' : r.isAuthor ? 'Author' : r.isContributor ? 'Contributor' : null,
+    postCount: r.postCount,
+  }))
 }
 
 // ---------------------------------------------------------------------------
@@ -685,39 +695,8 @@ export async function recordView(postId: string, visitorToken: string): Promise<
 }
 
 // ---------------------------------------------------------------------------
-// Roles
+// User picker
 // ---------------------------------------------------------------------------
-
-export type RoleListItem = { userId: string; email: string; username: string; displayName: string | null; role: GazetteRole | null }
-
-export async function listUserRoles(): Promise<RoleListItem[]> {
-  const rows = await prisma.$queryRaw<RoleListItem[]>`
-    SELECT u."id" as "userId", u."email", u."username", u."displayName", ur."role" as "role"
-    FROM "gz_user_roles" ur
-    JOIN "User" u ON u."id" = ur."user_id"
-    ORDER BY u."displayName" ASC NULLS LAST, u."username" ASC
-  `
-  return rows
-}
-
-export async function getUserRole(userId: string): Promise<GazetteRole | null> {
-  const rows = await prisma.$queryRaw<Array<{ role: GazetteRole }>>`
-    SELECT "role" FROM "gz_user_roles" WHERE "user_id" = ${userId} LIMIT 1
-  `
-  return rows[0]?.role ?? null
-}
-
-export async function setUserRole(userId: string, role: GazetteRole, assignedBy: string): Promise<void> {
-  await prisma.$executeRaw`
-    INSERT INTO "gz_user_roles" ("user_id", "role", "assigned_by")
-    VALUES (${userId}, ${role}, ${assignedBy})
-    ON CONFLICT ("user_id") DO UPDATE SET "role" = ${role}, "assigned_by" = ${assignedBy}
-  `
-}
-
-export async function removeUserRole(userId: string): Promise<void> {
-  await prisma.$executeRaw`DELETE FROM "gz_user_roles" WHERE "user_id" = ${userId}`
-}
 
 export type UserPickerItem = { id: string; email: string; username: string; displayName: string | null; suspendedAt: Date | null }
 
