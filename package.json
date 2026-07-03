@@ -1,0 +1,7 @@
+{
+  "name": "cactus-module-gazette",
+  "version": "0.1.0",
+  "description": "Gazette module for Cactus",
+  "license": "MIT",
+  "private": true
+}
