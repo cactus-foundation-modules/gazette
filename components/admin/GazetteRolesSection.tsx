@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import type { RoleListItem } from '@/modules/gazette/lib/db'
 import type { GazetteRole } from '@/modules/gazette/lib/types'
 
@@ -14,11 +13,24 @@ const ROLE_LABELS: Record<GazetteRole, string> = {
   GAZETTE_EDITOR: 'Editor',
 }
 
-export default function RolesScreen({ roles }: { roles: RoleListItem[] }) {
-  const router = useRouter()
+export function GazetteRolesSection() {
+  const [roles, setRoles] = useState<RoleListItem[] | null>(null)
+  const [forbidden, setForbidden] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<UserPickerItem[]>([])
   const [searching, setSearching] = useState(false)
+
+  async function load() {
+    const res = await fetch('/api/m/gazette/admin/roles')
+    if (res.status === 403) { setForbidden(true); return }
+    const data = await res.json()
+    setRoles(data.roles ?? [])
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- delegating to async helper; all setState calls are after awaits
+    load()
+  }, [])
 
   async function search(q: string) {
     setQuery(q)
@@ -38,18 +50,27 @@ export default function RolesScreen({ roles }: { roles: RoleListItem[] }) {
     })
     setQuery('')
     setResults([])
-    router.refresh()
+    await load()
   }
 
   async function remove(userId: string) {
     await fetch(`/api/m/gazette/admin/roles/${userId}`, { method: 'DELETE' })
-    router.refresh()
+    await load()
   }
 
+  if (forbidden || roles === null) return null
+
   return (
-    <div>
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
-        <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Assign a role</h3>
+    <div className="card" style={{ marginTop: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <h2 className="card-title" style={{ margin: 0 }}>Gazette</h2>
+      </div>
+      <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: 0, marginBottom: '1rem' }}>
+        Core admins always have full access to the gazette.
+      </p>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.375rem', fontWeight: 600 }}>Assign a role</label>
         <input
           value={query}
           onChange={(e) => search(e.target.value)}
@@ -68,9 +89,7 @@ export default function RolesScreen({ roles }: { roles: RoleListItem[] }) {
       </div>
 
       {roles.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
-          No gazette roles assigned yet.
-        </div>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>No gazette roles assigned yet.</p>
       ) : (
         <div className="table-wrapper">
           <table>

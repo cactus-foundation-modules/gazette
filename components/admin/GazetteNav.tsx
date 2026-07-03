@@ -12,8 +12,6 @@ const TABS = [
   { label: 'Authors', segment: 'authors', editorOnly: false },
   { label: 'Comments', segment: 'comments', editorOnly: true },
   { label: 'Templates', segment: 'templates', editorOnly: false },
-  { label: 'Import', segment: 'import', editorOnly: true },
-  { label: 'Settings', segment: 'settings', editorOnly: true },
 ]
 
 export default function GazetteNav({ access }: { access: GazetteAccess }) {
@@ -45,24 +43,6 @@ export default function GazetteNav({ access }: { access: GazetteAccess }) {
           </Link>
         )
       })}
-      {/* Roles is admin-only (Decision 4) - hidden even from non-admin gazette editors,
-          not just non-editors, so its existence isn't revealed to them at all. */}
-      {access.isAdminUser && (
-        <Link
-          key="roles"
-          href={`${base}/roles`}
-          prefetch={false}
-          style={{
-            padding: '0.625rem 1rem', textDecoration: 'none',
-            borderBottom: pathname?.startsWith(`${base}/roles`) ? '2px solid var(--color-primary)' : '2px solid transparent',
-            color: pathname?.startsWith(`${base}/roles`) ? 'var(--color-primary)' : 'var(--color-text-muted)',
-            fontWeight: pathname?.startsWith(`${base}/roles`) ? 600 : 400,
-            fontSize: 'var(--text-base)', whiteSpace: 'nowrap',
-          }}
-        >
-          Roles
-        </Link>
-      )}
     </div>
   )
 }
