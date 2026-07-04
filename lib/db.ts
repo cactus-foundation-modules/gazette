@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
-import { PUBLIC_VISIBLE_SQL, EFFECTIVE_PUBLISHED_SQL } from './visibility'
+import { publicVisibleSql, effectivePublishedSql } from './visibility'
 import type {
   GazettePost, GazettePostListItem, GazetteTag, GazetteTagWithCount, GazetteSeries,
   GazetteAuthorProfile, GazetteComment, GazettePostTemplate, PuckData,
@@ -206,7 +206,7 @@ export async function getVisiblePosts(opts: {
   const perPage = opts.limit ?? opts.perPage ?? 10
   const offset = (page - 1) * perPage
 
-  const conditions: Prisma.Sql[] = [PUBLIC_VISIBLE_SQL]
+  const conditions: Prisma.Sql[] = [publicVisibleSql()]
   let joinTag = Prisma.empty
   let joinSeries = Prisma.empty
 
@@ -226,7 +226,7 @@ export async function getVisiblePosts(opts: {
     const monthEnd = opts.month
       ? new Date(Date.UTC(opts.month === 12 ? opts.year + 1 : opts.year, opts.month === 12 ? 0 : opts.month, 1)).toISOString()
       : `${opts.year + 1}-01-01`
-    conditions.push(Prisma.sql`${EFFECTIVE_PUBLISHED_SQL} >= ${monthStart}::timestamp AND ${EFFECTIVE_PUBLISHED_SQL} < ${monthEnd}::timestamp`)
+    conditions.push(Prisma.sql`${effectivePublishedSql()} >= ${monthStart}::timestamp AND ${effectivePublishedSql()} < ${monthEnd}::timestamp`)
   }
 
   const where = Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
@@ -238,7 +238,7 @@ export async function getVisiblePosts(opts: {
         p."is_pinned",p."is_private",p."view_count",p."series_id",p."series_order",
         p."preview_token_hash",p."preview_token_expires_at",p."created_at",p."updated_at"
       FROM "gz_posts" p ${joinTag} ${joinSeries} ${where}
-      ORDER BY p."is_pinned" DESC, ${EFFECTIVE_PUBLISHED_SQL} DESC
+      ORDER BY p."is_pinned" DESC, ${effectivePublishedSql()} DESC
       LIMIT ${perPage} OFFSET ${offset}
     `,
     prisma.$queryRaw<[{ count: bigint }]>`
@@ -259,7 +259,7 @@ export async function getPostTitlesByIds(ids: string[]): Promise<Record<string, 
 
 export async function getVisiblePostBySlug(slug: string): Promise<GazettePost | null> {
   const rows = await prisma.$queryRaw<Record<string, unknown>[]>`
-    SELECT * FROM "gz_posts" WHERE "slug" = ${slug} AND ${PUBLIC_VISIBLE_SQL} LIMIT 1
+    SELECT * FROM "gz_posts" WHERE "slug" = ${slug} AND ${publicVisibleSql()} LIMIT 1
   `
   return rows[0] ? mapPostRow(rows[0]) : null
 }
@@ -290,9 +290,9 @@ export async function getRelatedPosts(postId: string, tagIds: string[], limit = 
         COUNT(pt."tag_id") as shared_tags
       FROM "gz_posts" p
       JOIN "gz_post_tags" pt ON pt."post_id" = p."id" AND pt."tag_id" IN (${Prisma.join(tagIds)})
-      WHERE p."id" != ${postId} AND ${PUBLIC_VISIBLE_SQL}
+      WHERE p."id" != ${postId} AND ${publicVisibleSql()}
       GROUP BY p."id"
-      ORDER BY shared_tags DESC, ${EFFECTIVE_PUBLISHED_SQL} DESC
+      ORDER BY shared_tags DESC, ${effectivePublishedSql()} DESC
       LIMIT ${limit}
     `
     if (rows.length > 0) return rows.map(mapPostListRow)
@@ -304,8 +304,8 @@ export async function getRelatedPosts(postId: string, tagIds: string[], limit = 
       "is_pinned","is_private","view_count","series_id","series_order",
       "preview_token_hash","preview_token_expires_at","created_at","updated_at"
     FROM "gz_posts"
-    WHERE "id" != ${postId} AND ${PUBLIC_VISIBLE_SQL}
-    ORDER BY ${EFFECTIVE_PUBLISHED_SQL} DESC
+    WHERE "id" != ${postId} AND ${publicVisibleSql()}
+    ORDER BY ${effectivePublishedSql()} DESC
     LIMIT ${limit}
   `
   return fallback.map(mapPostListRow)
