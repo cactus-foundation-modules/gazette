@@ -4,6 +4,7 @@ import type { MenuEntityKind, MenuEntitySearchResult, MenuEntityProvider, Resolv
 // Contributes to the "core.menu-entity-provider" extension point so the admin
 // menu builder can link to Gazette content.
 const KINDS: MenuEntityKind[] = [
+  { id: 'home', label: 'Gazette home page' },
   { id: 'post', label: 'Post' },
   { id: 'tag', label: 'Tag' },
   { id: 'series', label: 'Series' },
@@ -16,6 +17,9 @@ function listKinds(): MenuEntityKind[] {
 
 async function searchEntities(kind: string, query: string): Promise<MenuEntitySearchResult[]> {
   const q = `%${query}%`
+  if (kind === 'home') {
+    return [{ id: 'home', label: 'Gazette home page' }]
+  }
   if (kind === 'post') {
     const rows = await prisma.$queryRaw<Array<{ id: string; title: string; status: string }>>`
       SELECT "id", "title", "status" FROM "gz_posts" WHERE "title" ILIKE ${q} ORDER BY "created_at" DESC LIMIT 20
@@ -47,6 +51,9 @@ async function searchEntities(kind: string, query: string): Promise<MenuEntitySe
 }
 
 async function resolveEntity(kind: string, id: string): Promise<ResolvedMenuEntity | null> {
+  if (kind === 'home') {
+    return { label: 'Gazette', href: '/gazette', publiclyVisible: true }
+  }
   if (kind === 'post') {
     const rows = await prisma.$queryRaw<Array<{
       title: string; slug: string; status: string; published_at: Date | null; scheduled_for: Date | null; is_private: boolean

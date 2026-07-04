@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -37,8 +37,8 @@
   "layoutTypes": {
     "groupLabel": "Gazette",
     "types": [
-      { "key": "gazetteCategory", "label": "Category", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteCategoryStarters" },
-      { "key": "gazetteEntry", "label": "Entry", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteEntryStarters" }
+      { "key": "gazetteCategory", "label": "Listing", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteCategoryStarters" },
+      { "key": "gazetteEntry", "label": "Post", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteEntryStarters" }
     ]
   },
   "extensionPoints": [
