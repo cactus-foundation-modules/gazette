@@ -197,6 +197,7 @@ export async function getVisiblePosts(opts: {
   perPage?: number
   tagSlug?: string
   seriesSlug?: string
+  authorId?: string
   year?: number
   month?: number
   limit?: number
@@ -216,6 +217,9 @@ export async function getVisiblePosts(opts: {
   if (opts.seriesSlug) {
     joinSeries = Prisma.sql`JOIN "gz_series" s ON s."id" = p."series_id"`
     conditions.push(Prisma.sql`s."slug" = ${opts.seriesSlug}`)
+  }
+  if (opts.authorId) {
+    conditions.push(Prisma.sql`p."author_id" = ${opts.authorId}`)
   }
   if (opts.year) {
     const monthStart = opts.month ? `${opts.year}-${String(opts.month).padStart(2, '0')}-01` : `${opts.year}-01-01`

@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -24,5 +24,13 @@
   "puckBlocks": [
     { "type": "GazetteFeed", "import": "./components/puck/GazetteFeedBlock", "component": "gazetteFeedPuckComponent", "rscComponent": "gazetteFeedPuckRscComponent" },
     { "type": "GazetteFeatured", "import": "./components/puck/GazetteFeaturedBlock", "component": "gazetteFeaturedPuckComponent", "rscComponent": "gazetteFeaturedPuckRscComponent" }
+  ],
+  "extensionPoints": [
+    {
+      "point": "core.menu-entity-provider",
+      "id": "gazette",
+      "import": "./lib/menu-entity-provider",
+      "component": "gazetteMenuEntityProvider"
+    }
   ]
 }
