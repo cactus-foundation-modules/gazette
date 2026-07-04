@@ -18,7 +18,7 @@ import AuthorBio from '@/modules/gazette/components/public/AuthorBio'
 import SeriesNav from '@/modules/gazette/components/public/SeriesNav'
 import RelatedPosts from '@/modules/gazette/components/public/RelatedPosts'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/gazette/lib/inject-entry-context'
 import type { PuckData } from '@/modules/gazette/lib/types'
 

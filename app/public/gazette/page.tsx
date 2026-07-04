@@ -6,7 +6,7 @@ import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
 import PostGrid from '@/modules/gazette/components/public/PostGrid'
 import Pagination from '@/modules/gazette/components/public/Pagination'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext } from '@/modules/gazette/lib/inject-category-context'
 import type { PuckData } from '@/modules/gazette/lib/types'
 
