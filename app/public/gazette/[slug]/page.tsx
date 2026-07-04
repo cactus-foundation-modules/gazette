@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Render } from '@puckeditor/core/rsc'
 import { prisma } from '@/lib/db/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { getVisiblePostBySlug, getApprovedCommentCountsForPosts, getTagsForPost, getReactionCounts } from '@/modules/gazette/lib/db'
@@ -16,6 +17,10 @@ import CommentsSection from '@/modules/gazette/components/public/CommentsSection
 import AuthorBio from '@/modules/gazette/components/public/AuthorBio'
 import SeriesNav from '@/modules/gazette/components/public/SeriesNav'
 import RelatedPosts from '@/modules/gazette/components/public/RelatedPosts'
+import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { injectEntryContext } from '@/modules/gazette/lib/inject-entry-context'
+import type { PuckData } from '@/modules/gazette/lib/types'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -48,6 +53,12 @@ export default async function GazettePostPage({ params }: Props) {
   const { slug } = await params
   const post = await getVisiblePostBySlug(slug)
   if (!post) notFound()
+
+  const layout = await resolveThemeLayout('gazetteEntry', { moduleName: 'gazette', slug: post.slug })
+  if (layout?.builderData) {
+    const data = injectEntryContext(layout.builderData as PuckData, { entrySlug: post.slug })
+    return <Render config={getModuleLayoutPuckRscConfig('gazetteEntry') as any} data={data as any} />
+  }
 
   const [settings, user, image, author, tags, commentCounts, reactionCounts] = await Promise.all([
     getGazetteSettings(),
