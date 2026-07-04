@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
+import { TabStrip } from '@/components/admin/TabStrip'
 import type { GazettePostListItem, GazetteTag } from '@/modules/gazette/lib/types'
 import type { PostsTab } from '@/modules/gazette/lib/db'
 
@@ -93,25 +94,10 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 0, alignItems: 'center', borderBottom: '1px solid var(--color-border)', marginBottom: '1rem', overflowX: 'auto' }}>
-        {TABS.map((t) => (
-          <Link
-            key={t.value}
-            href={`${base}?tab=${t.value}`}
-            prefetch={false}
-            style={{
-              padding: '0.625rem 1rem', textDecoration: 'none',
-              borderBottom: tab === t.value ? '2px solid var(--color-primary)' : '2px solid transparent',
-              color: tab === t.value ? 'var(--color-primary)' : 'var(--color-text-muted)',
-              fontWeight: tab === t.value ? 600 : 400,
-              fontSize: 'var(--text-base)', whiteSpace: 'nowrap',
-            }}
-          >
-            {t.label}
-          </Link>
-        ))}
-        <span style={{ marginLeft: 'auto', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>
-      </div>
+      <TabStrip
+        items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?tab=${t.value}`, active: tab === t.value }))}
+        trailing={<span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>}
+      />
 
       <form onSubmit={submitSearch} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
         <input

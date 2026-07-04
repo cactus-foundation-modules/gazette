@@ -4,6 +4,7 @@ import { Fragment, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
+import { TabStrip } from '@/components/admin/TabStrip'
 import type { GazetteComment } from '@/modules/gazette/lib/types'
 
 type Row = GazetteComment & { postTitle: string }
@@ -72,24 +73,10 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 0, alignItems: 'center', borderBottom: '1px solid var(--color-border)', marginBottom: '1rem' }}>
-        {TABS.map((t) => (
-          <Link
-            key={t.value}
-            href={`${base}?status=${t.value}`}
-            prefetch={false}
-            style={{
-              padding: '0.625rem 1rem', textDecoration: 'none',
-              borderBottom: status === t.value ? '2px solid var(--color-primary)' : '2px solid transparent',
-              color: status === t.value ? 'var(--color-primary)' : 'var(--color-text-muted)',
-              fontWeight: status === t.value ? 600 : 400,
-            }}
-          >
-            {t.label}
-          </Link>
-        ))}
-        <span style={{ marginLeft: 'auto', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>
-      </div>
+      <TabStrip
+        items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?status=${t.value}`, active: status === t.value }))}
+        trailing={<span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>}
+      />
 
       {selected.size > 0 && (
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
