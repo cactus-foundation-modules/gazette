@@ -6,6 +6,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { getVisiblePostBySlug, getApprovedCommentCountsForPosts, getTagsForPost, getReactionCounts } from '@/modules/gazette/lib/db'
 import { getGazetteSettings } from '@/modules/gazette/lib/settings'
 import { extractHeadings } from '@/modules/gazette/lib/toc'
+import { getGazetteBreakpoints } from '@/modules/gazette/lib/breakpoints'
 import { readingTimeMinutes } from '@/modules/gazette/lib/reading-time'
 import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
 import PostBody from '@/modules/gazette/components/public/PostBody'
@@ -72,6 +73,7 @@ export default async function GazettePostPage({ params }: Props) {
 
   const effectiveDate = post.publishedAt ?? post.scheduledFor
   const headings = extractHeadings(post.builderData)
+  const { tabletBp } = await getGazetteBreakpoints()
   const readingTime = readingTimeMinutes(post.builderData)
   const authorName = author ? (author.displayName ?? author.username) : post.importedAuthorName
   const commentCount = commentCounts[post.id] ?? 0
@@ -91,7 +93,7 @@ export default async function GazettePostPage({ params }: Props) {
         {commentCount > 0 && <span>{commentCount} comments</span>}
       </div>
 
-      <TableOfContents headings={headings} />
+      <TableOfContents headings={headings} desktopBreakpoint={tabletBp} />
       <PostBody builderData={post.builderData} />
 
       {settings.showViewCounts && <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{post.viewCount} views</p>}

@@ -12,7 +12,10 @@ function TocLinks({ headings }: { headings: TocHeading[] }) {
   )
 }
 
-export default function TableOfContents({ headings }: { headings: TocHeading[] }) {
+// desktopBreakpoint is the site's tablet breakpoint (Styles > Spacing &
+// Breakpoints), resolved server-side and passed in so the sticky-sidebar vs
+// collapsed-<details> switch tracks the setting instead of a hardcoded width.
+export default function TableOfContents({ headings, desktopBreakpoint }: { headings: TocHeading[]; desktopBreakpoint: string }) {
   if (headings.length < 2) return null
 
   return (
@@ -27,7 +30,7 @@ export default function TableOfContents({ headings }: { headings: TocHeading[] }
         </div>
       </details>
       <style>{`
-        @media (min-width: 1100px) {
+        @media (min-width: ${desktopBreakpoint}) {
           .gz-toc-desktop { display: block !important; position: sticky; top: 5rem; float: right; width: 200px; margin-left: 2rem; margin-bottom: 1rem; }
           .gz-toc-mobile { display: none !important; }
         }

@@ -6,6 +6,7 @@ import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
 import PostBody from '@/modules/gazette/components/public/PostBody'
 import TableOfContents from '@/modules/gazette/components/public/TableOfContents'
 import { extractHeadings } from '@/modules/gazette/lib/toc'
+import { getGazetteBreakpoints } from '@/modules/gazette/lib/breakpoints'
 import { readingTimeMinutes } from '@/modules/gazette/lib/reading-time'
 
 type Props = { params: Promise<{ token: string }> }
@@ -21,6 +22,7 @@ export default async function GazettePreviewPage({ params }: Props) {
 
   const headings = extractHeadings(post.builderData)
   const readingTime = readingTimeMinutes(post.builderData)
+  const { tabletBp } = await getGazetteBreakpoints()
 
   return (
     <div className="gz-container">
@@ -30,7 +32,7 @@ export default async function GazettePreviewPage({ params }: Props) {
       </div>
       <h1>{post.title}</h1>
       <div style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>{readingTime} min read</div>
-      <TableOfContents headings={headings} />
+      <TableOfContents headings={headings} desktopBreakpoint={tabletBp} />
       <PostBody builderData={post.builderData} />
     </div>
   )
