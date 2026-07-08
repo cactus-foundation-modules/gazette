@@ -30,7 +30,7 @@ export default function TableOfContents({ headings, desktopBreakpoint }: { headi
         </div>
       </details>
       <style>{`
-        @media (min-width: ${desktopBreakpoint}) {
+        @media (min-width: calc(${desktopBreakpoint} + 1px)) {
           .gz-toc-desktop { display: block !important; position: sticky; top: 5rem; float: right; width: 200px; margin-left: 2rem; margin-bottom: 1rem; }
           .gz-toc-mobile { display: none !important; }
         }
