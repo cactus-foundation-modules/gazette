@@ -1,8 +1,10 @@
-import { connection } from 'next/server'
-import { getVisiblePostBySlug } from '@/modules/gazette/lib/db'
-import { getGazetteSettings } from '@/modules/gazette/lib/settings'
-import RelatedPosts from '@/modules/gazette/components/public/RelatedPosts'
-import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
+// Editor half only. The database-backed render lives in ./GazetteRelatedPostsBlock.rsc.
+//
+// This file reaches the Puck editor's client bundle through the generated
+// module-components registry, so whatever it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // entrySlug is injected by the post page (lib/inject-entry-context.ts)
 export type GazetteRelatedPostsProps = { entrySlug?: string }
@@ -15,25 +17,9 @@ export function GazetteRelatedPostsBlock() {
   )
 }
 
-export async function GazetteRelatedPostsBlockRsc(props: GazetteRelatedPostsProps) {
-  await connection()
-  if (!props.entrySlug) return null
-  const post = await getVisiblePostBySlug(props.entrySlug)
-  if (!post) return null
-  const settings = await getGazetteSettings()
-  return (
-    <>
-      <GazetteStyles />
-      <RelatedPosts postId={post.id} showViewCounts={settings.showViewCounts} />
-    </>
-  )
-}
-
 export const gazetteRelatedPostsPuckComponent = {
   label: 'Gazette: Related Posts',
   fields: {},
   defaultProps: {},
   render: GazetteRelatedPostsBlock,
 }
-
-export const gazetteRelatedPostsPuckRscComponent = { ...gazetteRelatedPostsPuckComponent, render: GazetteRelatedPostsBlockRsc }

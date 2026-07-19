@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -79,6 +79,7 @@
     {
       "type": "GazetteFeed",
       "import": "./components/puck/GazetteFeedBlock",
+      "rscImport": "./components/puck/GazetteFeedBlock.rsc",
       "component": "gazetteFeedPuckComponent",
       "rscComponent": "gazetteFeedPuckRscComponent",
       "layoutTypes": [
@@ -88,6 +89,7 @@
     {
       "type": "GazetteFeatured",
       "import": "./components/puck/GazetteFeaturedBlock",
+      "rscImport": "./components/puck/GazetteFeaturedBlock.rsc",
       "component": "gazetteFeaturedPuckComponent",
       "rscComponent": "gazetteFeaturedPuckRscComponent",
       "layoutTypes": [
@@ -97,6 +99,7 @@
     {
       "type": "GazetteCategoryHeader",
       "import": "./components/puck/GazetteCategoryHeaderBlock",
+      "rscImport": "./components/puck/GazetteCategoryHeaderBlock.rsc",
       "component": "gazetteCategoryHeaderPuckComponent",
       "rscComponent": "gazetteCategoryHeaderPuckRscComponent",
       "layoutTypes": [
@@ -106,6 +109,7 @@
     {
       "type": "GazetteEntryList",
       "import": "./components/puck/GazetteEntryListBlock",
+      "rscImport": "./components/puck/GazetteEntryListBlock.rsc",
       "component": "gazetteEntryListPuckComponent",
       "rscComponent": "gazetteEntryListPuckRscComponent",
       "layoutTypes": [
@@ -115,6 +119,7 @@
     {
       "type": "GazetteEntryHeader",
       "import": "./components/puck/GazetteEntryHeaderBlock",
+      "rscImport": "./components/puck/GazetteEntryHeaderBlock.rsc",
       "component": "gazetteEntryHeaderPuckComponent",
       "rscComponent": "gazetteEntryHeaderPuckRscComponent",
       "layoutTypes": [
@@ -124,6 +129,7 @@
     {
       "type": "GazettePostBody",
       "import": "./components/puck/GazettePostBodyBlock",
+      "rscImport": "./components/puck/GazettePostBodyBlock.rsc",
       "component": "gazettePostBodyPuckComponent",
       "rscComponent": "gazettePostBodyPuckRscComponent",
       "layoutTypes": [
@@ -133,6 +139,7 @@
     {
       "type": "GazetteAuthorBioBlock",
       "import": "./components/puck/GazetteAuthorBioBlock",
+      "rscImport": "./components/puck/GazetteAuthorBioBlock.rsc",
       "component": "gazetteAuthorBioPuckComponent",
       "rscComponent": "gazetteAuthorBioPuckRscComponent",
       "layoutTypes": [
@@ -142,6 +149,7 @@
     {
       "type": "GazetteSeriesNavBlock",
       "import": "./components/puck/GazetteSeriesNavBlock",
+      "rscImport": "./components/puck/GazetteSeriesNavBlock.rsc",
       "component": "gazetteSeriesNavPuckComponent",
       "rscComponent": "gazetteSeriesNavPuckRscComponent",
       "layoutTypes": [
@@ -151,6 +159,7 @@
     {
       "type": "GazetteRelatedPostsBlock",
       "import": "./components/puck/GazetteRelatedPostsBlock",
+      "rscImport": "./components/puck/GazetteRelatedPostsBlock.rsc",
       "component": "gazetteRelatedPostsPuckComponent",
       "rscComponent": "gazetteRelatedPostsPuckRscComponent",
       "layoutTypes": [
@@ -160,6 +169,7 @@
     {
       "type": "GazetteTableOfContentsBlock",
       "import": "./components/puck/GazetteTableOfContentsBlock",
+      "rscImport": "./components/puck/GazetteTableOfContentsBlock.rsc",
       "component": "gazetteTableOfContentsPuckComponent",
       "rscComponent": "gazetteTableOfContentsPuckRscComponent",
       "layoutTypes": [

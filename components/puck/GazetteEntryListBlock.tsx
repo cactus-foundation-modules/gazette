@@ -1,9 +1,10 @@
-import { connection } from 'next/server'
-import { getVisiblePosts } from '@/modules/gazette/lib/db'
-import { getGazetteSettings } from '@/modules/gazette/lib/settings'
-import PostGrid from '@/modules/gazette/components/public/PostGrid'
-import Pagination from '@/modules/gazette/components/public/Pagination'
-import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
+// Editor half only. The database-backed render lives in ./GazetteEntryListBlock.rsc.
+//
+// This file reaches the Puck editor's client bundle through the generated
+// module-components registry, so whatever it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // [ANCHOR] - mode/page/baseUrl/filter values are all injected by the listing
 // pages (lib/inject-category-context.ts) - this block has no configurable
@@ -28,26 +29,6 @@ export function GazetteEntryList() {
   )
 }
 
-export async function GazetteEntryListRsc(props: GazetteEntryListProps) {
-  await connection()
-  const settings = await getGazetteSettings()
-  const page = props.page ?? 1
-  const { posts, total } = await getVisiblePosts({
-    page, perPage: settings.postsPerPage,
-    tagSlug: props.tagSlug, seriesSlug: props.seriesSlug, authorId: props.authorId,
-    year: props.year, month: props.month,
-  })
-  const totalPages = Math.max(1, Math.ceil(total / settings.postsPerPage))
-
-  return (
-    <>
-      <GazetteStyles />
-      <PostGrid posts={posts} showViewCounts={settings.showViewCounts} />
-      <Pagination page={page} totalPages={totalPages} baseUrl={props.baseUrl ?? '/gazette'} />
-    </>
-  )
-}
-
 export const gazetteEntryListPuckComponent = {
   label: 'Gazette: Entry List [Anchor]',
   fields: {},
@@ -55,5 +36,3 @@ export const gazetteEntryListPuckComponent = {
   permissions: { delete: false, duplicate: false },
   render: GazetteEntryList,
 }
-
-export const gazetteEntryListPuckRscComponent = { ...gazetteEntryListPuckComponent, render: GazetteEntryListRsc }

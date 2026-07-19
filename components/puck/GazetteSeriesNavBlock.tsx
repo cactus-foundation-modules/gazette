@@ -1,7 +1,10 @@
-import { connection } from 'next/server'
-import { getVisiblePostBySlug } from '@/modules/gazette/lib/db'
-import SeriesNav from '@/modules/gazette/components/public/SeriesNav'
-import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
+// Editor half only. The database-backed render lives in ./GazetteSeriesNavBlock.rsc.
+//
+// This file reaches the Puck editor's client bundle through the generated
+// module-components registry, so whatever it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // entrySlug is injected by the post page (lib/inject-entry-context.ts)
 export type GazetteSeriesNavProps = { entrySlug?: string }
@@ -10,24 +13,9 @@ export function GazetteSeriesNavBlock() {
   return <div style={{ height: 60, background: 'var(--color-border)', borderRadius: 8, opacity: 0.6 }} />
 }
 
-export async function GazetteSeriesNavBlockRsc(props: GazetteSeriesNavProps) {
-  await connection()
-  if (!props.entrySlug) return null
-  const post = await getVisiblePostBySlug(props.entrySlug)
-  if (!post?.seriesId) return null
-  return (
-    <>
-      <GazetteStyles />
-      <SeriesNav seriesId={post.seriesId} currentPostId={post.id} />
-    </>
-  )
-}
-
 export const gazetteSeriesNavPuckComponent = {
   label: 'Gazette: Series Navigation',
   fields: {},
   defaultProps: {},
   render: GazetteSeriesNavBlock,
 }
-
-export const gazetteSeriesNavPuckRscComponent = { ...gazetteSeriesNavPuckComponent, render: GazetteSeriesNavBlockRsc }
