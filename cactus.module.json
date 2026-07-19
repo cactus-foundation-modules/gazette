@@ -1,44 +1,197 @@
 {
   "name": "gazette",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
-  "permissions": ["gazette.access", "gazette.contributor", "gazette.author", "gazette.editor"],
+  "permissions": [
+    "gazette.access",
+    "gazette.contributor",
+    "gazette.author",
+    "gazette.editor"
+  ],
   "navGroupLabel": "Gazette",
   "navGroupOrder": 0,
   "navEntries": [
-    { "label": "Posts", "path": "/m/gazette/posts", "icon": "<path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>", "permission": "gazette.access" },
-    { "label": "Tags", "path": "/m/gazette/tags", "icon": "<path d=\"M20.59 13.41 11 3.83A2 2 0 0 0 9.57 3H4a1 1 0 0 0-1 1v5.57a2 2 0 0 0 .83 1.42l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.25\" fill=\"currentColor\" stroke=\"none\"/>", "permission": "gazette.access" },
-    { "label": "Series", "path": "/m/gazette/series", "icon": "<path d=\"M12 2 2 7l10 5 10-5-10-5Z\"/><path d=\"M2 17l10 5 10-5\"/><path d=\"M2 12l10 5 10-5\"/>", "permission": "gazette.access" },
-    { "label": "Authors", "path": "/m/gazette/authors", "icon": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>", "permission": "gazette.access" },
-    { "label": "Comments", "path": "/m/gazette/comments", "icon": "<path d=\"M4 4h16v12H8l-4 4Z\"/>", "permission": "gazette.access" },
-    { "label": "Templates", "path": "/m/gazette/templates", "icon": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 9h18\"/><path d=\"M9 9v11\"/>", "permission": "gazette.access" }
+    {
+      "label": "Posts",
+      "path": "/m/gazette/posts",
+      "icon": "<path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>",
+      "permission": "gazette.access"
+    },
+    {
+      "label": "Tags",
+      "path": "/m/gazette/tags",
+      "icon": "<path d=\"M20.59 13.41 11 3.83A2 2 0 0 0 9.57 3H4a1 1 0 0 0-1 1v5.57a2 2 0 0 0 .83 1.42l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.25\" fill=\"currentColor\" stroke=\"none\"/>",
+      "permission": "gazette.access"
+    },
+    {
+      "label": "Series",
+      "path": "/m/gazette/series",
+      "icon": "<path d=\"M12 2 2 7l10 5 10-5-10-5Z\"/><path d=\"M2 17l10 5 10-5\"/><path d=\"M2 12l10 5 10-5\"/>",
+      "permission": "gazette.access"
+    },
+    {
+      "label": "Authors",
+      "path": "/m/gazette/authors",
+      "icon": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>",
+      "permission": "gazette.access"
+    },
+    {
+      "label": "Comments",
+      "path": "/m/gazette/comments",
+      "icon": "<path d=\"M4 4h16v12H8l-4 4Z\"/>",
+      "permission": "gazette.access"
+    },
+    {
+      "label": "Templates",
+      "path": "/m/gazette/templates",
+      "icon": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 9h18\"/><path d=\"M9 9v11\"/>",
+      "permission": "gazette.access"
+    }
   ],
   "settingsTabs": [
-    { "id": "gazette", "label": "Gazette", "permission": "gazette.access", "import": "./components/admin/GazetteSettingsTab", "component": "GazetteSettingsTab" }
+    {
+      "id": "gazette",
+      "label": "Gazette",
+      "permission": "gazette.access",
+      "import": "./components/admin/GazetteSettingsTab",
+      "component": "GazetteSettingsTab"
+    }
   ],
   "requiredEnvVars": [],
-  "cookieCategories": ["functional"],
-  "teardown": ["gz_post_tags", "gz_post_views", "gz_reactions", "gz_comments", "gz_posts", "gz_tags", "gz_series", "gz_author_profiles", "gz_settings", "gz_post_templates"],
+  "cookieCategories": [
+    "functional"
+  ],
+  "teardown": [
+    "gz_post_tags",
+    "gz_post_views",
+    "gz_reactions",
+    "gz_comments",
+    "gz_posts",
+    "gz_tags",
+    "gz_series",
+    "gz_author_profiles",
+    "gz_settings",
+    "gz_post_templates"
+  ],
   "puckBlocks": [
-    { "type": "GazetteFeed", "import": "./components/puck/GazetteFeedBlock", "component": "gazetteFeedPuckComponent", "rscComponent": "gazetteFeedPuckRscComponent", "layoutTypes": ["gazetteCategory"] },
-    { "type": "GazetteFeatured", "import": "./components/puck/GazetteFeaturedBlock", "component": "gazetteFeaturedPuckComponent", "rscComponent": "gazetteFeaturedPuckRscComponent", "layoutTypes": ["gazetteCategory"] },
-    { "type": "GazetteCategoryHeader", "import": "./components/puck/GazetteCategoryHeaderBlock", "component": "gazetteCategoryHeaderPuckComponent", "rscComponent": "gazetteCategoryHeaderPuckRscComponent", "layoutTypes": ["gazetteCategory"] },
-    { "type": "GazetteEntryList", "import": "./components/puck/GazetteEntryListBlock", "component": "gazetteEntryListPuckComponent", "rscComponent": "gazetteEntryListPuckRscComponent", "layoutTypes": ["gazetteCategory"] },
-    { "type": "GazetteEntryHeader", "import": "./components/puck/GazetteEntryHeaderBlock", "component": "gazetteEntryHeaderPuckComponent", "rscComponent": "gazetteEntryHeaderPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazettePostBody", "import": "./components/puck/GazettePostBodyBlock", "component": "gazettePostBodyPuckComponent", "rscComponent": "gazettePostBodyPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazetteAuthorBioBlock", "import": "./components/puck/GazetteAuthorBioBlock", "component": "gazetteAuthorBioPuckComponent", "rscComponent": "gazetteAuthorBioPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazetteSeriesNavBlock", "import": "./components/puck/GazetteSeriesNavBlock", "component": "gazetteSeriesNavPuckComponent", "rscComponent": "gazetteSeriesNavPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazetteRelatedPostsBlock", "import": "./components/puck/GazetteRelatedPostsBlock", "component": "gazetteRelatedPostsPuckComponent", "rscComponent": "gazetteRelatedPostsPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazetteTableOfContentsBlock", "import": "./components/puck/GazetteTableOfContentsBlock", "component": "gazetteTableOfContentsPuckComponent", "rscComponent": "gazetteTableOfContentsPuckRscComponent", "layoutTypes": ["gazetteEntry"] },
-    { "type": "GazetteCommentsBlock", "import": "./components/puck/GazetteCommentsBlock", "rscImport": "./components/puck/GazetteCommentsBlock.rsc", "component": "gazetteCommentsPuckComponent", "rscComponent": "gazetteCommentsPuckRscComponent", "layoutTypes": ["gazetteEntry"] }
+    {
+      "type": "GazetteFeed",
+      "import": "./components/puck/GazetteFeedBlock",
+      "component": "gazetteFeedPuckComponent",
+      "rscComponent": "gazetteFeedPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteFeatured",
+      "import": "./components/puck/GazetteFeaturedBlock",
+      "component": "gazetteFeaturedPuckComponent",
+      "rscComponent": "gazetteFeaturedPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteCategoryHeader",
+      "import": "./components/puck/GazetteCategoryHeaderBlock",
+      "component": "gazetteCategoryHeaderPuckComponent",
+      "rscComponent": "gazetteCategoryHeaderPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteEntryList",
+      "import": "./components/puck/GazetteEntryListBlock",
+      "component": "gazetteEntryListPuckComponent",
+      "rscComponent": "gazetteEntryListPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteEntryHeader",
+      "import": "./components/puck/GazetteEntryHeaderBlock",
+      "component": "gazetteEntryHeaderPuckComponent",
+      "rscComponent": "gazetteEntryHeaderPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazettePostBody",
+      "import": "./components/puck/GazettePostBodyBlock",
+      "component": "gazettePostBodyPuckComponent",
+      "rscComponent": "gazettePostBodyPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazetteAuthorBioBlock",
+      "import": "./components/puck/GazetteAuthorBioBlock",
+      "component": "gazetteAuthorBioPuckComponent",
+      "rscComponent": "gazetteAuthorBioPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazetteSeriesNavBlock",
+      "import": "./components/puck/GazetteSeriesNavBlock",
+      "component": "gazetteSeriesNavPuckComponent",
+      "rscComponent": "gazetteSeriesNavPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazetteRelatedPostsBlock",
+      "import": "./components/puck/GazetteRelatedPostsBlock",
+      "component": "gazetteRelatedPostsPuckComponent",
+      "rscComponent": "gazetteRelatedPostsPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazetteTableOfContentsBlock",
+      "import": "./components/puck/GazetteTableOfContentsBlock",
+      "component": "gazetteTableOfContentsPuckComponent",
+      "rscComponent": "gazetteTableOfContentsPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    },
+    {
+      "type": "GazetteCommentsBlock",
+      "import": "./components/puck/GazetteCommentsBlock",
+      "rscImport": "./components/puck/GazetteCommentsBlock.rsc",
+      "component": "gazetteCommentsPuckComponent",
+      "rscComponent": "gazetteCommentsPuckRscComponent",
+      "layoutTypes": [
+        "gazetteEntry"
+      ]
+    }
   ],
   "layoutTypes": {
     "groupLabel": "Gazette",
     "types": [
-      { "key": "gazetteCategory", "label": "Listing", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteCategoryStarters" },
-      { "key": "gazetteEntry", "label": "Post", "starterImport": "./lib/starterLayouts", "starterExport": "gazetteEntryStarters" }
+      {
+        "key": "gazetteCategory",
+        "label": "Listing",
+        "starterImport": "./lib/starterLayouts",
+        "starterExport": "gazetteCategoryStarters"
+      },
+      {
+        "key": "gazetteEntry",
+        "label": "Post",
+        "starterImport": "./lib/starterLayouts",
+        "starterExport": "gazetteEntryStarters"
+      }
     ]
   },
   "extensionPoints": [
@@ -47,6 +200,12 @@
       "id": "gazette",
       "import": "./lib/menu-entity-provider",
       "component": "gazetteMenuEntityProvider"
+    },
+    {
+      "point": "core.media-usage-providers",
+      "id": "gazette",
+      "import": "./lib/media-usage-provider",
+      "component": "gazetteMediaUsageProvider"
     }
   ]
 }
