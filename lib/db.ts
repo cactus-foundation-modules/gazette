@@ -65,6 +65,17 @@ export async function getPostById(id: string): Promise<GazettePost | null> {
   return rows[0] ? mapPostRow(rows[0]) : null
 }
 
+// True only when the post exists and is publicly viewable (published/scheduled-in-
+// the-past and not private) - the same predicate the public list/detail paths use.
+// Public engagement endpoints (views, reactions) call this so a draft/private/
+// unknown id can't inflate view counts, attract reactions, or 500 on a FK error.
+export async function isPostPubliclyVisible(id: string): Promise<boolean> {
+  const rows = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT "id" FROM "gz_posts" WHERE "id" = ${id} AND ${publicVisibleSql()} LIMIT 1
+  `
+  return !!rows[0]
+}
+
 export type UpdatePostInput = Partial<{
   title: string
   slug: string
