@@ -27,7 +27,8 @@ export default async function GazettePostsPage({ searchParams }: Props) {
   const tabParam = sp.tab ?? 'all'
   const tab = (VALID_TABS.includes(tabParam) ? tabParam : 'all') as PostsTab
   const q = sp.q
-  const page = parseInt(sp.page ?? '1', 10)
+  // Clamped and NaN-proofed - see the comments page for the OFFSET NaN error.
+  const page = Math.max(1, parseInt(sp.page ?? '1', 10) || 1)
   const authorScopeId = access.isEditor ? undefined : user.id
 
   const { posts, total } = await listPostsAdmin({ tab, q, page, perPage: 25, authorScopeId })

@@ -21,7 +21,9 @@ export default async function GazetteCommentsPage({ searchParams }: Props) {
 
   const sp = await searchParams
   const status = sp.status ?? 'PENDING'
-  const page = parseInt(sp.page ?? '1', 10)
+  // Clamped and NaN-proofed - a mistyped ?page= otherwise reached listComments
+  // as NaN and rendered an error page instead of page one.
+  const page = Math.max(1, parseInt(sp.page ?? '1', 10) || 1)
 
   const { comments, total } = await listComments({ status, page, perPage: 25 })
   const postIds = [...new Set(comments.map((c) => c.postId))]

@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
 
   const sp = request.nextUrl.searchParams
   const status = sp.get('status') ?? 'all'
-  const page = parseInt(sp.get('page') ?? '1', 10)
+  // Clamped and NaN-proofed: a mistyped page number reached listComments as
+  // NaN, and (NaN - 1) * perPage is an OFFSET no query can run - a 500 where
+  // page one is the only sensible answer. Page 0 would go negative likewise.
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10) || 1)
 
   const { comments, total } = await listComments({ status, page, perPage: 25 })
   return NextResponse.json({ comments, total })

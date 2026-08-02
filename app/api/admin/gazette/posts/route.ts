@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
   const tabParam = sp.get('tab') ?? 'all'
   const tab = (VALID_TABS.includes(tabParam) ? tabParam : 'all') as PostsTab
   const q = sp.get('q') ?? undefined
-  const page = parseInt(sp.get('page') ?? '1', 10)
+  // Clamped and NaN-proofed - see the comments route for the OFFSET NaN 500.
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10) || 1)
 
   const authorScopeId = access.isEditor ? undefined : user.id
 
