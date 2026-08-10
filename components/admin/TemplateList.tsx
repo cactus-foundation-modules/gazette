@@ -26,7 +26,7 @@ export default function TemplateList({ templates, isEditor }: { templates: Array
 
   if (templates.length === 0) {
     return (
-      <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+      <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
         No templates yet. Save a post as a template from the post editor.
       </div>
     )

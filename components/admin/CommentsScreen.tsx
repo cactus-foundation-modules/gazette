@@ -75,7 +75,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
     <div>
       <TabStrip
         items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?status=${t.value}`, active: status === t.value }))}
-        trailing={<span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>}
+        trailing={<span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>{total} total</span>}
       />
 
       {selected.size > 0 && (
@@ -87,7 +87,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
       )}
 
       {comments.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           No comments yet.
         </div>
       ) : (
@@ -108,7 +108,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
                     <td style={{ fontSize: '0.8125rem' }}>{c.authorName}</td>
                     <td style={{ fontSize: '0.8125rem' }}>{c.body.slice(0, 120)}{c.body.length > 120 ? '…' : ''}</td>
                     <td><span className={`badge ${c.status === 'APPROVED' ? 'badge-success' : c.status === 'REJECTED' ? 'badge-danger' : 'badge-info'}`}>{c.status}</span></td>
-                    <td style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{new Date(c.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{new Date(c.createdAt).toLocaleDateString('en-GB')}</td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
                         {c.status !== 'APPROVED' && <button className="btn btn-ghost btn-sm" onClick={() => rowAction(c.id, 'APPROVED')}>Approve</button>}

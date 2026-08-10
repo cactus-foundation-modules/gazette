@@ -31,7 +31,7 @@ export default function TemplateChooser({ templates }: { templates: Array<{ id: 
         style={{ padding: '1.5rem', textAlign: 'left', cursor: 'pointer', border: '1px dashed var(--color-border)', background: 'var(--color-surface)' }}
       >
         <strong>Blank post</strong>
-        <p style={{ margin: '0.375rem 0 0', fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>Start from scratch</p>
+        <p style={{ margin: '0.375rem 0 0', fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>Start from scratch</p>
       </button>
       {templates.map((t) => (
         <button

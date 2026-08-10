@@ -65,12 +65,12 @@ export default function ImportWizard() {
       </div>
 
       {type === 'medium' && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
           Unzip your export and choose the HTML files inside the posts folder.
         </p>
       )}
       {type === 'substack' && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
           Unzip your export and choose posts.csv, plus the matching HTML files if you have them.
         </p>
       )}
@@ -103,7 +103,7 @@ export default function ImportWizard() {
               {preview.map((row, i) => (
                 <tr key={i}>
                   <td>{row.title}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{row.slug}</td>
+                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>{row.slug}</td>
                   <td style={{ fontSize: '0.8125rem' }}>{row.tags.join(', ') || '—'}</td>
                   <td style={{ fontSize: '0.8125rem' }}>{row.authorMatch}</td>
                   <td><span className={`badge ${row.action === 'Import' ? 'badge-success' : 'badge-muted'}`}>{row.action}</span></td>

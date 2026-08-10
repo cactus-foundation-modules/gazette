@@ -172,7 +172,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
             onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); onFieldChange() }}
             style={{ fontSize: '0.8125rem', padding: '0.25rem 0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', width: '100%', maxWidth: 400 }}
           />
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
             {typeof window !== 'undefined' ? window.location.origin : ''}/gazette/{slug || '…'}
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
             placeholder="Shown in feeds and social previews"
             style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, fontSize: '0.875rem', fontFamily: 'inherit', background: 'var(--color-bg)', color: 'var(--color-text)', resize: 'vertical' }}
           />
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>{excerpt.length}/500</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>{excerpt.length}/500</div>
         </div>
 
         <div style={{ flex: 1, minHeight: 400, border: '1px solid var(--color-border)', borderRadius: 6, overflow: 'hidden' }}>
@@ -207,7 +207,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
               {status === 'PUBLISHED' ? 'Published' : status === 'SCHEDULED' ? 'Scheduled' : 'Draft'}
             </span>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>
             {saving ? 'Saving…' : lastSaved ? `Saved ${lastSaved.toLocaleTimeString()}` : 'Not saved yet'}
             <div>Ctrl+S / Cmd+S saves</div>
           </div>
@@ -231,7 +231,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
               </>
             )}
             <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
-            {previewUrl && <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{previewUrl}</div>}
+            {previewUrl && <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', wordBreak: 'break-all' }}>{previewUrl}</div>}
             <button type="button" className="btn btn-ghost btn-sm" onClick={saveAsTemplate}>{templateSaved ? 'Saved as template' : 'Save as Template'}</button>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
             <input type="checkbox" checked={isPrivate} onChange={(e) => { setIsPrivate(e.target.checked); onFieldChange() }} />
             Private
           </label>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>Hidden from the public site and feeds</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>Hidden from the public site and feeds</div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', marginTop: '0.5rem' }}>
             <input type="checkbox" checked={isPinned} onChange={(e) => { setIsPinned(e.target.checked); onFieldChange() }} />
             Pinned
@@ -288,7 +288,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
           </select>
           {seriesId && (
             <div style={{ marginTop: '0.5rem' }}>
-              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Position in series</label>
+              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Position in series</label>
               <input
                 type="number"
                 value={seriesOrder}
@@ -312,7 +312,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
           <summary style={{ fontSize: '0.9375rem', fontWeight: 600, cursor: 'pointer' }}>SEO</summary>
           <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Meta title</label>
+              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Meta title</label>
               <input
                 value={seoTitle}
                 onChange={(e) => { setSeoTitle(e.target.value); onFieldChange() }}
@@ -320,10 +320,10 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
                 maxLength={60}
                 style={{ width: '100%', padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, fontSize: '0.8125rem', background: 'var(--color-bg)', color: 'var(--color-text)' }}
               />
-              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>{seoTitle.length}/60</div>
+              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>{seoTitle.length}/60</div>
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Meta description</label>
+              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Meta description</label>
               <textarea
                 value={seoDescription}
                 onChange={(e) => { setSeoDescription(e.target.value); onFieldChange() }}
@@ -332,16 +332,16 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
                 rows={3}
                 style={{ width: '100%', padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, fontSize: '0.8125rem', background: 'var(--color-bg)', color: 'var(--color-text)', resize: 'vertical' }}
               />
-              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>{seoDescription.length}/160</div>
+              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>{seoDescription.length}/160</div>
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Canonical URL</label>
+              <label style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Canonical URL</label>
               <input
                 value={canonicalUrl}
                 onChange={(e) => { setCanonicalUrl(e.target.value); onFieldChange() }}
                 style={{ width: '100%', padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, fontSize: '0.8125rem', background: 'var(--color-bg)', color: 'var(--color-text)' }}
               />
-              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>Use this if the post was originally published elsewhere</div>
+              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>Use this if the post was originally published elsewhere</div>
             </div>
           </div>
         </details>

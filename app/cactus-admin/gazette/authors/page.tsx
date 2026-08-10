@@ -25,7 +25,7 @@ export default async function GazetteAuthorsPage() {
         <h1 className="page-title">Authors</h1>
       </div>
       {authors.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           No authors yet.
         </div>
       ) : (
@@ -36,7 +36,7 @@ export default async function GazetteAuthorsPage() {
               {authors.map((a) => (
                 <tr key={a.userId}>
                   <td>{a.displayName ?? a.username}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{a.role ?? '—'}</td>
+                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>{a.role ?? '—'}</td>
                   <td>{a.postCount}</td>
                   <td>
                     {(access.isEditor || a.userId === user.id) && (

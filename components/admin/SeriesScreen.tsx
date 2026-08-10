@@ -41,7 +41,7 @@ export default function SeriesScreen({ series, isEditor }: { series: Array<Gazet
       )}
 
       {series.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           No series yet.
         </div>
       ) : (
@@ -52,7 +52,7 @@ export default function SeriesScreen({ series, isEditor }: { series: Array<Gazet
               {series.map((s) => (
                 <tr key={s.id}>
                   <td><Link href={`/${adminPath}/m/gazette/series/${s.id}`}>{s.title}</Link></td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{s.slug}</td>
+                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>{s.slug}</td>
                   <td>{s.postCount}</td>
                 </tr>
               ))}

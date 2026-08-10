@@ -62,7 +62,7 @@ export default function TagsScreen({ tags, isEditor }: { tags: GazetteTagWithCou
       )}
 
       {tags.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           No tags yet. You can create one above.
         </div>
       ) : (
@@ -89,7 +89,7 @@ export default function TagsScreen({ tags, isEditor }: { tags: GazetteTagWithCou
                         <button className="btn btn-secondary btn-sm" onClick={() => saveSlug(t.id)} style={{ marginTop: '0.25rem' }}>Save</button>
                       </div>
                     ) : (
-                      <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{t.slug}</span>
+                      <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>{t.slug}</span>
                     )}
                   </td>
                   <td>{t.postCount}</td>

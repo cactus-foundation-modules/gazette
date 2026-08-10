@@ -96,7 +96,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
     <div>
       <TabStrip
         items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?tab=${t.value}`, active: tab === t.value }))}
-        trailing={<span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{total} total</span>}
+        trailing={<span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>{total} total</span>}
       />
 
       <form onSubmit={submitSearch} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
@@ -111,13 +111,13 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
 
       {selected.size > 0 && (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem', padding: '0.5rem 0.75rem', background: 'var(--color-surface-alt)', borderRadius: '0.375rem' }}>
-          <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>{selected.size} selected</span>
+          <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>{selected.size} selected</span>
           <button className="btn btn-danger btn-sm" onClick={deleteSelected} disabled={busy}>Delete selected</button>
         </div>
       )}
 
       {posts.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           Nothing in the gazette yet. Write your first post.
         </div>
       ) : (
@@ -151,11 +151,11 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
                     </Link>
                   </td>
                   <td>{statusBadge(p.status)}</td>
-                  <td style={{ fontSize: '0.8125rem' }}>{p.authorName ?? <span style={{ color: 'var(--color-text-muted)' }}>—</span>}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+                  <td style={{ fontSize: '0.8125rem' }}>{p.authorName ?? <span style={{ color: 'var(--color-text-secondary)' }}>—</span>}</td>
+                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                     {p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('en-GB') : p.scheduledFor ? new Date(p.scheduledFor).toLocaleDateString('en-GB') : '—'}
                   </td>
-                  <td style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{p.tags.map((t) => t.name).join(', ') || '—'}</td>
+                  <td style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{p.tags.map((t) => t.name).join(', ') || '—'}</td>
                   <td style={{ fontSize: '0.8125rem' }}>{p.viewCount}</td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
@@ -174,7 +174,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
       {totalPages > 1 && (
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'center' }}>
           {page > 1 && <Link href={`${base}?tab=${tab}&page=${page - 1}`} className="btn btn-secondary btn-sm">Previous</Link>}
-          <span style={{ lineHeight: '2rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Page {page} of {totalPages}</span>
+          <span style={{ lineHeight: '2rem', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>Page {page} of {totalPages}</span>
           {page < totalPages && <Link href={`${base}?tab=${tab}&page=${page + 1}`} className="btn btn-secondary btn-sm">Next</Link>}
         </div>
       )}
