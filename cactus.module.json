@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -10,43 +10,11 @@
     "gazette.author",
     "gazette.editor"
   ],
-  "navGroupLabel": "Gazette",
-  "navGroupOrder": 0,
   "navEntries": [
     {
-      "label": "Posts",
+      "label": "Gazette",
       "path": "/m/gazette/posts",
       "icon": "<path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>",
-      "permission": "gazette.access"
-    },
-    {
-      "label": "Tags",
-      "path": "/m/gazette/tags",
-      "icon": "<path d=\"M20.59 13.41 11 3.83A2 2 0 0 0 9.57 3H4a1 1 0 0 0-1 1v5.57a2 2 0 0 0 .83 1.42l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.25\" fill=\"currentColor\" stroke=\"none\"/>",
-      "permission": "gazette.access"
-    },
-    {
-      "label": "Series",
-      "path": "/m/gazette/series",
-      "icon": "<path d=\"M12 2 2 7l10 5 10-5-10-5Z\"/><path d=\"M2 17l10 5 10-5\"/><path d=\"M2 12l10 5 10-5\"/>",
-      "permission": "gazette.access"
-    },
-    {
-      "label": "Authors",
-      "path": "/m/gazette/authors",
-      "icon": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>",
-      "permission": "gazette.access"
-    },
-    {
-      "label": "Comments",
-      "path": "/m/gazette/comments",
-      "icon": "<path d=\"M4 4h16v12H8l-4 4Z\"/>",
-      "permission": "gazette.access"
-    },
-    {
-      "label": "Templates",
-      "path": "/m/gazette/templates",
-      "icon": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 9h18\"/><path d=\"M9 9v11\"/>",
       "permission": "gazette.access"
     }
   ],
