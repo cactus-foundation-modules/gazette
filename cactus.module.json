@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",

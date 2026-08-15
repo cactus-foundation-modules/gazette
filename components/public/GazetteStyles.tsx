@@ -38,6 +38,13 @@ export default function GazetteStyles() {
 
       .gz-post-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
       .gz-post-card { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; display: block; }
+      /* The card is one big link, so core's plain "a:hover { text-decoration:
+         underline }" out-specificities the rule above and underlines the
+         excerpt and byline as well as the title. Put the decoration back to
+         none on the card itself (two classes beats a:hover) and hang the
+         underline on the heading, which is the only part that reads as a link. */
+      .gz-post-card:hover { text-decoration: none; }
+      .gz-post-card:hover h3 { text-decoration: underline; }
       .gz-post-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
       .gz-post-card-body { padding: 1rem; }
       .gz-post-card h3 { margin: 0 0 0.375rem; font-size: 1.125rem; }
