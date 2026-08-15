@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 import { publicVisibleSql, effectivePublishedSql } from './visibility'
 import type {
-  GazettePost, GazettePostListItem, GazetteTag, GazetteTagWithCount, GazetteSeries,
+  GazettePost, GazettePostListItem, GazettePostSort, GazetteTag, GazetteTagWithCount, GazetteSeries,
   GazetteAuthorProfile, GazetteComment, GazettePostTemplate, PuckData,
 } from './types'
 
@@ -212,6 +212,7 @@ export async function getVisiblePosts(opts: {
   year?: number
   month?: number
   limit?: number
+  sort?: GazettePostSort
 }): Promise<{ posts: GazettePostListItem[]; total: number }> {
   const page = opts.page ?? 1
   const perPage = opts.limit ?? opts.perPage ?? 10
@@ -241,6 +242,11 @@ export async function getVisiblePosts(opts: {
   }
 
   const where = Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
+  // Pinned posts stay on top whatever the order - that is what pinning is for.
+  const orderBy = opts.sort === 'oldest' ? Prisma.sql`p."is_pinned" DESC, ${effectivePublishedSql()} ASC`
+    : opts.sort === 'views' ? Prisma.sql`p."is_pinned" DESC, p."view_count" DESC, ${effectivePublishedSql()} DESC`
+    : opts.sort === 'title' ? Prisma.sql`p."is_pinned" DESC, p."title" ASC`
+    : Prisma.sql`p."is_pinned" DESC, ${effectivePublishedSql()} DESC`
 
   const [rows, countRows] = await Promise.all([
     prisma.$queryRaw<Record<string, unknown>[]>`
@@ -249,7 +255,7 @@ export async function getVisiblePosts(opts: {
         p."is_pinned",p."is_private",p."view_count",p."series_id",p."series_order",
         p."preview_token_hash",p."preview_token_expires_at",p."created_at",p."updated_at"
       FROM "gz_posts" p ${joinTag} ${joinSeries} ${where}
-      ORDER BY p."is_pinned" DESC, ${effectivePublishedSql()} DESC
+      ORDER BY ${orderBy}
       LIMIT ${perPage} OFFSET ${offset}
     `,
     prisma.$queryRaw<[{ count: bigint }]>`
@@ -258,6 +264,58 @@ export async function getVisiblePosts(opts: {
   ])
 
   return { posts: rows.map(mapPostListRow), total: Number(countRows[0].count) }
+}
+
+// ---------------------------------------------------------------------------
+// Listing filter options (series / author / tag chips)
+// ---------------------------------------------------------------------------
+
+// One row per thing a visitor can filter the listing by. Counts are of publicly
+// visible posts only - the admin-side counts elsewhere in this file include
+// drafts and private posts, which would have a chip promise nine posts and
+// deliver two. Anything with no visible posts is left out entirely: a chip that
+// leads to an empty listing is just a trap.
+export type GazetteFilterOptionRow = { key: string; label: string; count: number }
+
+export async function getSeriesFilterOptions(): Promise<GazetteFilterOptionRow[]> {
+  return prisma.$queryRaw<GazetteFilterOptionRow[]>`
+    SELECT s."slug" as "key", s."title" as "label", COUNT(p."id")::int as "count"
+    FROM "gz_series" s
+    JOIN "gz_posts" p ON p."series_id" = s."id" AND ${publicVisibleSql()}
+    GROUP BY s."id"
+    ORDER BY s."title" ASC
+  `
+}
+
+export async function getTagFilterOptions(): Promise<GazetteFilterOptionRow[]> {
+  return prisma.$queryRaw<GazetteFilterOptionRow[]>`
+    SELECT t."slug" as "key", t."name" as "label", COUNT(p."id")::int as "count"
+    FROM "gz_tags" t
+    JOIN "gz_post_tags" pt ON pt."tag_id" = t."id"
+    JOIN "gz_posts" p ON p."id" = pt."post_id" AND ${publicVisibleSql()}
+    GROUP BY t."id"
+    ORDER BY t."name" ASC
+  `
+}
+
+// Keyed by username, matching /gazette/author/<username>. Posts carrying only
+// an imported_author_name have no user row to filter by, so they don't appear
+// here - the same limit the author listing route already has.
+export async function getAuthorFilterOptions(): Promise<GazetteFilterOptionRow[]> {
+  return prisma.$queryRaw<GazetteFilterOptionRow[]>`
+    SELECT u."username" as "key", COALESCE(u."displayName", u."username") as "label", COUNT(p."id")::int as "count"
+    FROM "User" u
+    JOIN "gz_posts" p ON p."author_id" = u."id" AND ${publicVisibleSql()}
+    GROUP BY u."id"
+    ORDER BY COALESCE(u."displayName", u."username") ASC
+  `
+}
+
+export async function resolveAuthorIdByUsername(username: string): Promise<string | null> {
+  const rows = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT "id" FROM "User" WHERE "username" = ${username} LIMIT 1
+  `
+  return rows[0]?.id ?? null
 }
 
 export async function getPostTitlesByIds(ids: string[]): Promise<Record<string, string>> {

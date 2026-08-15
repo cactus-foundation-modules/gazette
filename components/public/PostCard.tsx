@@ -1,28 +1,32 @@
 import Link from 'next/link'
-import type { GazettePostListItem } from '@/modules/gazette/lib/types'
+import type { GazettePostCard, PostCardDisplay } from '@/modules/gazette/lib/types'
 
-export default function PostCard({ post, imageUrl, authorName, commentCount, showViewCounts }: {
-  post: GazettePostListItem
-  imageUrl?: string | null
-  authorName?: string | null
-  commentCount?: number
-  showViewCounts?: boolean
-}) {
-  const date = post.publishedAt ?? post.scheduledFor
+// Presentational only - no data access - so the load-more list can render the
+// same card client-side as the server did.
+export default function PostCard({ card, display }: { card: GazettePostCard; display?: PostCardDisplay }) {
+  const show = {
+    image: display?.showImage !== false,
+    excerpt: display?.showExcerpt !== false,
+    author: display?.showAuthor !== false,
+    date: display?.showDate !== false,
+    comments: display?.showComments !== false,
+    views: display?.showViews === true,
+  }
+
   return (
-    <Link href={`/gazette/${post.slug}`} className="gz-post-card">
-      {imageUrl && (
+    <Link href={`/gazette/${card.slug}`} className="gz-post-card">
+      {show.image && card.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={imageUrl} alt="" />
+        <img src={card.imageUrl} alt="" />
       )}
       <div className="gz-post-card-body">
-        <h3>{post.title}</h3>
-        {post.excerpt && <p>{post.excerpt}</p>}
+        <h3>{card.title}</h3>
+        {show.excerpt && card.excerpt && <p>{card.excerpt}</p>}
         <div className="gz-post-card-meta">
-          {authorName && <span>{authorName}</span>}
-          {date && <span>{new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
-          {typeof commentCount === 'number' && commentCount > 0 && <span>{commentCount} comments</span>}
-          {showViewCounts && <span>{post.viewCount} views</span>}
+          {show.author && card.authorName && <span>{card.authorName}</span>}
+          {show.date && card.dateLabel && <span>{card.dateLabel}</span>}
+          {show.comments && card.commentCount > 0 && <span>{card.commentCount} comments</span>}
+          {show.views && <span>{card.viewCount} views</span>}
         </div>
       </div>
     </Link>

@@ -46,7 +46,8 @@ export default async function GazetteAuthorPage({ params, searchParams }: Props)
   const layout = await resolveThemeLayout('gazetteCategory', { moduleName: 'gazette' })
   if (layout?.builderData) {
     const data = injectCategoryContext(layout.builderData as PuckData, {
-      heading: author.displayName ?? author.username, description: author.bio, page, baseUrl: `/gazette/author/${username}`, authorId: author.id,
+      heading: author.displayName ?? author.username, description: author.bio, page, baseUrl: `/gazette/author/${username}`,
+      authorId: author.id, authorUsername: username,
     })
     return <Render config={getModuleLayoutPuckRscConfig('gazetteCategory') as any} data={data as any} />
   }

@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -80,6 +80,36 @@
       "rscImport": "./components/puck/GazetteEntryListBlock.rsc",
       "component": "gazetteEntryListPuckComponent",
       "rscComponent": "gazetteEntryListPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteSeriesFilter",
+      "import": "./components/puck/GazetteSeriesFilterBlock",
+      "rscImport": "./components/puck/GazetteSeriesFilterBlock.rsc",
+      "component": "gazetteSeriesFilterPuckComponent",
+      "rscComponent": "gazetteSeriesFilterPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteAuthorFilter",
+      "import": "./components/puck/GazetteAuthorFilterBlock",
+      "rscImport": "./components/puck/GazetteAuthorFilterBlock.rsc",
+      "component": "gazetteAuthorFilterPuckComponent",
+      "rscComponent": "gazetteAuthorFilterPuckRscComponent",
+      "layoutTypes": [
+        "gazetteCategory"
+      ]
+    },
+    {
+      "type": "GazetteTagFilter",
+      "import": "./components/puck/GazetteTagFilterBlock",
+      "rscImport": "./components/puck/GazetteTagFilterBlock.rsc",
+      "component": "gazetteTagFilterPuckComponent",
+      "rscComponent": "gazetteTagFilterPuckRscComponent",
       "layoutTypes": [
         "gazetteCategory"
       ]

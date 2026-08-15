@@ -1,6 +1,9 @@
 import type { PuckData } from '@/modules/gazette/lib/types'
 
-const CATEGORY_CONTEXT_BLOCKS = new Set(['GazetteCategoryHeader', 'GazetteEntryList'])
+const CATEGORY_CONTEXT_BLOCKS = new Set([
+  'GazetteCategoryHeader', 'GazetteEntryList',
+  'GazetteSeriesFilter', 'GazetteAuthorFilter', 'GazetteTagFilter',
+])
 
 export type GazetteCategoryContext = {
   heading: string
@@ -10,6 +13,10 @@ export type GazetteCategoryContext = {
   tagSlug?: string
   seriesSlug?: string
   authorId?: string
+  // The same author as authorId, by username: the filter chips build
+  // /gazette?author=<username> links, matching the author listing route, and
+  // ids have no business in a public URL.
+  authorUsername?: string
   year?: number
   month?: number
 }

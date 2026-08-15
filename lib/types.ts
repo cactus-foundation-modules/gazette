@@ -34,6 +34,35 @@ export type GazettePost = {
 
 export type GazettePostListItem = Omit<GazettePost, 'builderData'>
 
+export type GazettePostSort = 'newest' | 'oldest' | 'views' | 'title'
+
+// Everything a post card draws, flattened and JSON-safe: the same shape comes
+// out of the server render and out of /api/m/gazette/public/posts, so the
+// load-more list can append to a server-rendered grid without a second code path.
+export type GazettePostCard = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  date: string | null
+  // Formatted server-side. The browser's timezone isn't the server's, so
+  // letting the client format would hand a hydrating card a different day.
+  dateLabel: string | null
+  imageUrl: string | null
+  authorName: string | null
+  commentCount: number
+  viewCount: number
+}
+
+export type PostCardDisplay = {
+  showImage?: boolean
+  showExcerpt?: boolean
+  showAuthor?: boolean
+  showDate?: boolean
+  showComments?: boolean
+  showViews?: boolean
+}
+
 export type GazetteTag = {
   id: string
   name: string
