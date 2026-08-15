@@ -18,7 +18,11 @@ export async function GazetteTableOfContentsBlockRsc(props: GazetteTableOfConten
   return (
     <>
       <GazetteStyles />
-      <TableOfContents headings={headings} desktopBreakpoint={tabletBp} />
+      {/* 'flow', never the built-in page's 'float': this block sits in a column
+          of a layout, and a float would drag the list out of that column and
+          make the next block in it - usually Series Navigation - wrap its text
+          around the contents list. */}
+      <TableOfContents headings={headings} desktopBreakpoint={tabletBp} variant="flow" />
     </>
   )
 }

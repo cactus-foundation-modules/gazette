@@ -10,7 +10,9 @@
 export type GazetteTableOfContentsProps = { entrySlug?: string }
 
 export function GazetteTableOfContentsBlock() {
-  return <div style={{ height: 120, width: '30%', background: 'var(--color-border)', borderRadius: 8, opacity: 0.6 }} />
+  // Full width of whatever column it is dropped into, matching the published
+  // block - it no longer floats out to one side.
+  return <div style={{ height: 120, width: '100%', background: 'var(--color-border)', borderRadius: 8, opacity: 0.6 }} />
 }
 
 export const gazetteTableOfContentsPuckComponent = {
