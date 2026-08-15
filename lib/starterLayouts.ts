@@ -1,8 +1,15 @@
 // Starter layout templates for the gazetteCategory/gazetteEntry layout types,
 // collected by scripts/generate-module-layout-types.mjs (core) via this
 // module's cactus.module.json layoutTypes.types[].starterImport/starterExport.
-// Seeded as drafts only (see lib/setup/starterLayouts.ts) - the site owner
-// opts in by publishing one.
+//
+// Seeding is opt-in per template: core's seedTemplates() copies the ones marked
+// publishByDefault and skips the rest entirely - it does not seed drafts. This
+// file used to mark none, so an install got no Gazette layouts at all and both
+// Listing and Post sat empty under Layouts with nothing to say why. Exactly one
+// template per type is now marked, and it is the full-width one in each case:
+// closest to the hardcoded fallback page it takes over from, no sidebar to look
+// half-empty on a blog with three posts in it. The other four are still there in
+// the + New Layout picker.
 
 const block = (type: string, id: string, props: Record<string, unknown> = {}) => ({ type, props: { id, ...props } })
 
@@ -48,6 +55,9 @@ export function gazetteCategoryStarters() {
       id: 'starter-gazette-category-banner',
       name: 'Full Width with Banner',
       description: 'Header, full-width featured banner, then a full-width post list below.',
+      // The seeded default. GazetteFeatured renders nothing when there is no post
+      // to feature, so a brand new blog gets header + list and no empty banner.
+      publishByDefault: true,
       data: {
         content: [
           block('GazetteCategoryHeader', 'header-1'),
@@ -97,6 +107,9 @@ export function gazetteEntryStarters() {
       id: 'starter-gazette-entry-hero',
       name: 'Full Width Hero then Details',
       description: 'Full-width header, boxed body, author bio and related posts stacked below.',
+      // The seeded default: the same run of parts as the hardcoded post page it
+      // replaces - header, body, series nav, author, related, comments.
+      publishByDefault: true,
       data: {
         content: [
           block('GazetteEntryHeader', 'header-1'),
