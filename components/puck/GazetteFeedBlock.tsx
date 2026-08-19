@@ -1,4 +1,4 @@
-import { connection } from 'next/server'
+import GazetteStyles from '@/modules/gazette/components/public/GazetteStyles'
 
 // Editor half only. The database-backed render lives in ./GazetteFeedBlock.rsc.
 //
@@ -19,18 +19,36 @@ export type GazetteFeedBlockProps = {
   readMoreLabel?: string
 }
 
+// Which of the .gz-post-grid column counts each layout asks for. The rules in
+// GazetteStyles pin that count on a wide screen and collapse to two columns and
+// then to one as the screen narrows, which is the whole reason this block hands
+// its layout to the shared grid rather than writing its own gridTemplateColumns:
+// three 98px columns on a handset is not a roundup, it is a puzzle.
+export function feedColumns(layout?: string): string {
+  if (layout === 'List') return '1'
+  if (layout === 'Compact') return '4'
+  return '3'
+}
+
 // Editor canvas: static skeleton, no fetch during render (matches contact-form's
-// pattern of a lightweight, non-fetching editor preview).
+// pattern of a lightweight, non-fetching editor preview). It carries the same
+// grid class as the real render so the canvas collapses with the viewport the
+// same way the published page does. GazetteStyles is a bare <style> with no
+// imports of its own, so it is safe in the editor's client bundle.
 export function GazetteFeedBlock(props: GazetteFeedBlockProps) {
-  const count = props.count ?? 3
+  const columns = feedColumns(props.layout)
+  const boxes = Math.max(1, Math.min(props.count ?? 3, Number(columns)))
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(count, 3)}, 1fr)`, gap: '1rem', opacity: 0.6 }}>
-      {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
-        <div key={i} style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: '1rem' }}>
-          <div style={{ height: 100, background: 'var(--color-border)', borderRadius: 6, marginBottom: '0.5rem' }} />
-          <div style={{ height: 14, width: '80%', background: 'var(--color-border)', borderRadius: 4 }} />
-        </div>
-      ))}
+    <div style={{ opacity: 0.6 }}>
+      <GazetteStyles />
+      <div className="gz-post-grid" data-cols={columns}>
+        {Array.from({ length: boxes }).map((_, i) => (
+          <div key={i} style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: '1rem' }}>
+            <div style={{ height: 100, background: 'var(--color-border)', borderRadius: 6, marginBottom: '0.5rem' }} />
+            <div style={{ height: 14, width: '80%', background: 'var(--color-border)', borderRadius: 4 }} />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

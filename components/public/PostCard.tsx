@@ -3,7 +3,13 @@ import type { GazettePostCard, PostCardDisplay } from '@/modules/gazette/lib/typ
 
 // Presentational only - no data access - so the load-more list can render the
 // same card client-side as the server did.
-export default function PostCard({ card, display }: { card: GazettePostCard; display?: PostCardDisplay }) {
+export default function PostCard({ card, display, readMoreLabel }: {
+  card: GazettePostCard
+  display?: PostCardDisplay
+  // Only the Gazette Feed block asks for this; the listing's cards carry no
+  // prompt of their own, the whole card being the link.
+  readMoreLabel?: string
+}) {
   const show = {
     image: display?.showImage !== false,
     excerpt: display?.showExcerpt !== false,
@@ -28,6 +34,7 @@ export default function PostCard({ card, display }: { card: GazettePostCard; dis
           {show.comments && card.commentCount > 0 && <span>{card.commentCount} comments</span>}
           {show.views && <span>{card.viewCount} views</span>}
         </div>
+        {readMoreLabel && <span className="gz-post-card-more">{readMoreLabel}</span>}
       </div>
     </Link>
   )

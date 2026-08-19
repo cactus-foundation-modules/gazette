@@ -11,13 +11,17 @@ import type { GazettePostCard, PostCardDisplay } from '@/modules/gazette/lib/typ
 // imageRatio and hover work the same way: left off they render exactly the grid
 // this module has always rendered, and the rules for each value live beside the
 // column ones as .gz-post-grid[data-ratio] / [data-hover].
-export default function PostCardGrid({ cards, columns, display, emptyMessage, imageRatio, hover }: {
+//
+// readMoreLabel is the Gazette Feed block's own: only that block puts a "Read
+// more" line on a card, so left off the cards are exactly the listing's.
+export default function PostCardGrid({ cards, columns, display, emptyMessage, imageRatio, hover, readMoreLabel }: {
   cards: GazettePostCard[]
   columns?: string
   display?: PostCardDisplay
   emptyMessage?: string
   imageRatio?: string
   hover?: string
+  readMoreLabel?: string
 }) {
   if (cards.length === 0) {
     return <p style={{ color: 'var(--color-text-muted)' }}>{emptyMessage ?? 'Nothing published yet - check back soon.'}</p>
@@ -30,7 +34,7 @@ export default function PostCardGrid({ cards, columns, display, emptyMessage, im
       data-ratio={imageRatio}
       data-hover={hover}
     >
-      {cards.map((card) => <PostCard key={card.id} card={card} display={display} />)}
+      {cards.map((card) => <PostCard key={card.id} card={card} display={display} readMoreLabel={readMoreLabel} />)}
     </div>
   )
 }

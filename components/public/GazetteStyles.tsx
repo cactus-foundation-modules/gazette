@@ -89,6 +89,8 @@ export default function GazetteStyles() {
       .gz-post-card h3 { margin: 0 0 0.375rem; font-size: 1.125rem; }
       .gz-post-card p { margin: 0; font-size: 0.875rem; color: var(--color-text-muted); }
       .gz-post-card-meta { display: flex; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-muted); }
+      /* The Gazette Feed block's "Read more" line. Not part of a listing card. */
+      .gz-post-card-more { display: inline-block; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--color-primary); }
 
       .gz-filter { margin: 0 0 1.5rem; }
       .gz-filter-title { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); margin: 0 0 0.5rem; }
