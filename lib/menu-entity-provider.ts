@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import type { MenuEntityKind, MenuEntitySearchResult, MenuEntityProvider, ResolvedMenuEntity } from '@/lib/modules/menu-entity-provider'
+import { getPostUrlStyle, postHref } from './post-url'
 
 // Contributes to the "core.menu-entity-provider" extension point so the admin
 // menu builder can link to Gazette content.
@@ -67,7 +68,7 @@ async function resolveEntity(kind: string, id: string): Promise<ResolvedMenuEnti
       !post.is_private &&
       ((post.status === 'PUBLISHED' && !!post.published_at && post.published_at.getTime() <= now) ||
         (post.status === 'SCHEDULED' && !!post.scheduled_for && post.scheduled_for.getTime() <= now))
-    return { label: post.title, href: `/gazette/${post.slug}`, publiclyVisible }
+    return { label: post.title, href: postHref(post.slug, await getPostUrlStyle()), publiclyVisible }
   }
   if (kind === 'tag') {
     const rows = await prisma.$queryRaw<Array<{ name: string; slug: string }>>`SELECT "name", "slug" FROM "gz_tags" WHERE "id" = ${id} LIMIT 1`

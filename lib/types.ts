@@ -2,6 +2,8 @@ export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'SCHEDULED'
 export type CommentStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type CommentsVisibility = 'PUBLIC' | 'MEMBERS_ONLY'
 export type CommentModeration = 'PRE' | 'POST'
+// Where a post lives: 'PREFIXED' = /gazette/<slug>, 'ROOT' = /<slug>.
+export type PostUrlStyle = 'PREFIXED' | 'ROOT'
 
 
 export type PuckData = { root: { props?: Record<string, any> }; content: any[]; zones?: Record<string, any> }
@@ -43,6 +45,9 @@ export type GazettePostCard = {
   id: string
   title: string
   slug: string
+  // Built server-side from the site's post URL style, so a card appended by the
+  // load-more list links to the same place a server-rendered one does.
+  href: string
   excerpt: string | null
   date: string | null
   // Formatted server-side. The browser's timezone isn't the server's, so
@@ -117,6 +122,7 @@ export type GazetteSettings = {
   reactionsEnabled: boolean
   reactionSet: string[] | null
   showViewCounts: boolean
+  postUrlStyle: PostUrlStyle
   updatedAt: Date
 }
 

@@ -27,6 +27,7 @@ const Body = z.object({
   reactionsEnabled: z.boolean().optional(),
   reactionSet: z.array(z.string()).optional(),
   showViewCounts: z.boolean().optional(),
+  postUrlStyle: z.enum(['PREFIXED', 'ROOT']).optional(),
 })
 
 export async function PATCH(request: NextRequest) {

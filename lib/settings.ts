@@ -17,6 +17,7 @@ function mapRow(r: Record<string, unknown>): GazetteSettings {
     reactionsEnabled: r.reactions_enabled as boolean,
     reactionSet: (r.reaction_set as string[] | null) ?? null,
     showViewCounts: r.show_view_counts as boolean,
+    postUrlStyle: (r.post_url_style as GazetteSettings['postUrlStyle'] | null) ?? 'PREFIXED',
     updatedAt: r.updated_at as Date,
   }
 }
@@ -32,7 +33,7 @@ export async function getGazetteSettings(): Promise<GazetteSettings> {
         id: 'singleton', postsPerPage: 10, rssEnabled: true, feedTitle: null, feedDescription: null,
         commentsEnabled: true, commentsVisibility: 'PUBLIC' as const, commentModeration: 'PRE' as const,
         commentsThreaded: true, reactionsEnabled: true, reactionSet: null, showViewCounts: false,
-        updatedAt: new Date(),
+        postUrlStyle: 'PREFIXED' as const, updatedAt: new Date(),
       }
   if (!settings.reactionSet || settings.reactionSet.length === 0) {
     settings.reactionSet = DEFAULT_REACTION_SET
@@ -52,6 +53,7 @@ export type UpdateSettingsInput = Partial<{
   reactionsEnabled: boolean
   reactionSet: string[]
   showViewCounts: boolean
+  postUrlStyle: GazetteSettings['postUrlStyle']
 }>
 
 export async function updateGazetteSettings(input: UpdateSettingsInput): Promise<GazetteSettings> {
@@ -62,11 +64,11 @@ export async function updateGazetteSettings(input: UpdateSettingsInput): Promise
     INSERT INTO "gz_settings" (
       "id", "posts_per_page", "rss_enabled", "feed_title", "feed_description",
       "comments_enabled", "comments_visibility", "comment_moderation", "comments_threaded",
-      "reactions_enabled", "reaction_set", "show_view_counts", "updated_at"
+      "reactions_enabled", "reaction_set", "show_view_counts", "post_url_style", "updated_at"
     ) VALUES (
       'singleton', ${merged.postsPerPage}, ${merged.rssEnabled}, ${merged.feedTitle}, ${merged.feedDescription},
       ${merged.commentsEnabled}, ${merged.commentsVisibility}, ${merged.commentModeration}, ${merged.commentsThreaded},
-      ${merged.reactionsEnabled}, ${JSON.stringify(merged.reactionSet)}::jsonb, ${merged.showViewCounts}, CURRENT_TIMESTAMP
+      ${merged.reactionsEnabled}, ${JSON.stringify(merged.reactionSet)}::jsonb, ${merged.showViewCounts}, ${merged.postUrlStyle}, CURRENT_TIMESTAMP
     )
     ON CONFLICT ("id") DO UPDATE SET
       "posts_per_page" = ${merged.postsPerPage},
@@ -80,6 +82,7 @@ export async function updateGazetteSettings(input: UpdateSettingsInput): Promise
       "reactions_enabled" = ${merged.reactionsEnabled},
       "reaction_set" = ${JSON.stringify(merged.reactionSet)}::jsonb,
       "show_view_counts" = ${merged.showViewCounts},
+      "post_url_style" = ${merged.postUrlStyle},
       "updated_at" = CURRENT_TIMESTAMP
   `
   return getGazetteSettings()

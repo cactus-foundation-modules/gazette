@@ -35,10 +35,23 @@ export default function SettingsForm({ settings: initial }: { settings: GazetteS
           onChange={(e) => set('postsPerPage', Number(e.target.value))}
           style={{ width: 100, padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', marginBottom: '0.75rem' }}
         />
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', marginBottom: '0.75rem' }}>
           <input type="checkbox" checked={settings.showViewCounts} onChange={(e) => set('showViewCounts', e.target.checked)} />
           Show view counts publicly
         </label>
+        <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Post links</label>
+        <select
+          value={settings.postUrlStyle}
+          onChange={(e) => set('postUrlStyle', e.target.value as GazetteSettings['postUrlStyle'])}
+          style={{ padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }}
+        >
+          <option value="PREFIXED">Under the gazette (/gazette/your-post)</option>
+          <option value="ROOT">Straight off the home page (/your-post)</option>
+        </select>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', margin: '0.375rem 0 0' }}>
+          Change this and old post links keep working - they send readers to the new address on their own.
+          The listing, tags, series and archive pages stay under /gazette either way.
+        </p>
       </div>
 
       <div className="card" style={{ padding: '1rem' }}>

@@ -1,6 +1,7 @@
 import { connection } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getVisiblePosts } from '@/modules/gazette/lib/db'
+import { getPostUrlStyle, postHref } from '@/modules/gazette/lib/post-url'
 import { gazetteFeaturedPuckComponent, type GazetteFeaturedBlockProps } from './GazetteFeaturedBlock'
 
 export async function GazetteFeaturedBlockRsc({ source, layout }: GazetteFeaturedBlockProps) {
@@ -10,15 +11,18 @@ export async function GazetteFeaturedBlockRsc({ source, layout }: GazetteFeature
   const chosen = source === 'Pinned' ? posts.find((p) => p.isPinned) ?? posts[0] : posts[0]
   if (!chosen) return null
 
-  const image = chosen.featuredImageId
-    ? await prisma.media.findUnique({ where: { id: chosen.featuredImageId }, select: { url: true } })
-    : null
+  const [image, style] = await Promise.all([
+    chosen.featuredImageId
+      ? prisma.media.findUnique({ where: { id: chosen.featuredImageId }, select: { url: true } })
+      : Promise.resolve(null),
+    getPostUrlStyle(),
+  ])
 
   const isHero = layout === 'Hero'
   const isMinimal = layout === 'Minimal'
 
   return (
-    <a href={`/gazette/${chosen.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', border: isMinimal ? 'none' : '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
+    <a href={postHref(chosen.slug, style)} style={{ textDecoration: 'none', color: 'inherit', display: 'block', border: isMinimal ? 'none' : '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
       {!isMinimal && image?.url && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={image.url} alt="" style={{ width: '100%', aspectRatio: isHero ? '21/9' : '16/9', objectFit: 'cover', display: 'block' }} />

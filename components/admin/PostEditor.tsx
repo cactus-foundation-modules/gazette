@@ -7,7 +7,7 @@ import '@puckeditor/core/no-external.css'
 import { bodyEditorConfig } from '@/modules/gazette/components/puck/body/bodyEditorConfig'
 import { OgImagePickerField } from '@/lib/puck/MediaPickerField'
 import TagMultiSelect from './TagMultiSelect'
-import type { GazettePost, GazetteTag, GazetteSeries, PuckData } from '@/modules/gazette/lib/types'
+import type { GazettePost, GazetteTag, GazetteSeries, PostUrlStyle, PuckData } from '@/modules/gazette/lib/types'
 import type { AuthorListItem } from '@/modules/gazette/lib/db'
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   currentUserId: string
   canPublish: boolean
   canReassignAuthor: boolean
+  postUrlStyle: PostUrlStyle
 }
 
 const AUTOSAVE_DEBOUNCE_MS = 1500
@@ -26,7 +27,7 @@ function slugify(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
 }
 
-export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor }: Props) {
+export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor, postUrlStyle }: Props) {
   const [title, setTitle] = useState(post.title)
   const [slug, setSlug] = useState(post.slug)
   const [slugTouched, setSlugTouched] = useState(true)
@@ -173,7 +174,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
             style={{ fontSize: '0.8125rem', padding: '0.25rem 0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', width: '100%', maxWidth: 400 }}
           />
           <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
-            {typeof window !== 'undefined' ? window.location.origin : ''}/gazette/{slug || '…'}
+            {typeof window !== 'undefined' ? window.location.origin : ''}{postUrlStyle === 'ROOT' ? '/' : '/gazette/'}{slug || '…'}
           </div>
         </div>
 

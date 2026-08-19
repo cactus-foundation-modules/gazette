@@ -14,7 +14,7 @@ export default function PostCard({ card, display }: { card: GazettePostCard; dis
   }
 
   return (
-    <Link href={`/gazette/${card.slug}`} className="gz-post-card">
+    <Link href={card.href} className="gz-post-card">
       {show.image && card.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={card.imageUrl} alt="" />

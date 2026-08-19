@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma'
 import { getApprovedCommentCountsForPosts } from './db'
-import type { GazettePostCard, GazettePostListItem } from './types'
+import { getPostUrlStyle, postHref } from './post-url'
+import type { GazettePostCard, GazettePostListItem, PostUrlStyle } from './types'
 
 const DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
 
@@ -8,8 +9,15 @@ const DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long',
 // for the image/author/comment-count lookups, whether the cards are going
 // straight into a server render or out through the public posts endpoint for
 // the load-more list.
-export async function toPostCards(posts: GazettePostListItem[]): Promise<GazettePostCard[]> {
+//
+// The href is baked in here rather than in the card component, because the card
+// is also rendered in the browser by the load-more list, which has no way to ask
+// the database which URL style the site is on. Callers already holding the
+// settings row can pass the style straight in and save the extra read.
+export async function toPostCards(posts: GazettePostListItem[], style?: PostUrlStyle): Promise<GazettePostCard[]> {
   if (posts.length === 0) return []
+
+  const urlStyle = style ?? (await getPostUrlStyle())
 
   const imageIds = posts.map((p) => p.featuredImageId).filter((id): id is string => !!id)
   const authorIds = posts.map((p) => p.authorId).filter((id): id is string => !!id)
@@ -28,6 +36,7 @@ export async function toPostCards(posts: GazettePostListItem[]): Promise<Gazette
       id: post.id,
       title: post.title,
       slug: post.slug,
+      href: postHref(post.slug, urlStyle),
       excerpt: post.excerpt,
       date: date ? new Date(date).toISOString() : null,
       dateLabel: date ? new Date(date).toLocaleDateString('en-GB', DATE_FORMAT) : null,

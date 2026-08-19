@@ -1,6 +1,7 @@
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { getGazetteAccess, canViewGazetteAdmin, canEditPost, canPublishPost } from '@/modules/gazette/lib/permissions'
 import { getPostById, getTagIdsForPost, listTags, listSeries, listAuthors } from '@/modules/gazette/lib/db'
+import { getPostUrlStyle } from '@/modules/gazette/lib/post-url'
 import GazetteNav from '@/modules/gazette/components/admin/GazetteNav'
 import PostEditor from '@/modules/gazette/components/admin/PostEditor'
 import { notFound } from 'next/navigation'
@@ -24,7 +25,7 @@ export default async function PostEditorPage({ params }: Params) {
     return <div className="alert alert-danger">You do not have permission to edit this post.</div>
   }
 
-  const [tagIds, tags, series] = await Promise.all([getTagIdsForPost(id), listTags(), listSeries()])
+  const [tagIds, tags, series, postUrlStyle] = await Promise.all([getTagIdsForPost(id), listTags(), listSeries(), getPostUrlStyle()])
   const authors = access.isEditor ? await listAuthors() : []
 
   return (
@@ -38,6 +39,7 @@ export default async function PostEditorPage({ params }: Params) {
         currentUserId={user.id}
         canPublish={canPublishPost(access, user.id, post)}
         canReassignAuthor={access.isEditor}
+        postUrlStyle={postUrlStyle}
       />
     </div>
   )

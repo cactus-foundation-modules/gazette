@@ -175,11 +175,14 @@ CREATE TABLE IF NOT EXISTS "gz_settings" (
     -- null = default set defined in code (DEFAULT_REACTION_SET in lib/settings.ts)
     "reaction_set"        JSONB,
     "show_view_counts"    BOOLEAN      NOT NULL DEFAULT false,
+    -- Where a post lives. 'PREFIXED' = /gazette/<slug>, 'ROOT' = /<slug>.
+    "post_url_style"      TEXT         NOT NULL DEFAULT 'PREFIXED',
     "updated_at"          TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "gz_settings_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "gz_settings_singleton" CHECK ("id" = 'singleton'),
     CONSTRAINT "gz_settings_visibility_check" CHECK ("comments_visibility" IN ('PUBLIC','MEMBERS_ONLY')),
-    CONSTRAINT "gz_settings_moderation_check" CHECK ("comment_moderation" IN ('PRE','POST'))
+    CONSTRAINT "gz_settings_moderation_check" CHECK ("comment_moderation" IN ('PRE','POST')),
+    CONSTRAINT "gz_settings_post_url_style_check" CHECK ("post_url_style" IN ('PREFIXED','ROOT'))
 );
 INSERT INTO "gz_settings" ("id") VALUES ('singleton') ON CONFLICT ("id") DO NOTHING;
 

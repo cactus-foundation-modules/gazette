@@ -43,5 +43,5 @@ export async function GET(request: NextRequest) {
     sort: parseSort(sp.get('sort')),
   })
 
-  return NextResponse.json({ items: await toPostCards(posts), hasMore: page * perPage < total })
+  return NextResponse.json({ items: await toPostCards(posts, settings.postUrlStyle), hasMore: page * perPage < total })
 }

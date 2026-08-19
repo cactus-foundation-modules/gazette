@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { getSeriesById, getSeriesPosts } from '@/modules/gazette/lib/db'
+import { getPostUrlStyle, postHref } from '@/modules/gazette/lib/post-url'
 
 export default async function SeriesNav({ seriesId, currentPostId }: { seriesId: string; currentPostId: string }) {
-  const [series, posts] = await Promise.all([getSeriesById(seriesId), getSeriesPosts(seriesId)])
+  const [series, posts, style] = await Promise.all([getSeriesById(seriesId), getSeriesPosts(seriesId), getPostUrlStyle()])
   if (!series) return null
 
   const visible = posts.filter((p) => p.status === 'PUBLISHED' || p.status === 'SCHEDULED')
@@ -18,8 +19,8 @@ export default async function SeriesNav({ seriesId, currentPostId }: { seriesId:
         Part {index + 1} of {visible.length} in <Link href={`/gazette/series/${series.slug}`}>{series.title}</Link>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-        {prev ? <Link href={`/gazette/${prev.slug}`}>&larr; {prev.title}</Link> : <span />}
-        {next ? <Link href={`/gazette/${next.slug}`}>{next.title} &rarr;</Link> : <span />}
+        {prev ? <Link href={postHref(prev.slug, style)}>&larr; {prev.title}</Link> : <span />}
+        {next ? <Link href={postHref(next.slug, style)}>{next.title} &rarr;</Link> : <span />}
       </div>
     </div>
   )

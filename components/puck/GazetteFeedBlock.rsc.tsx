@@ -1,6 +1,7 @@
 import { connection } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getVisiblePosts } from '@/modules/gazette/lib/db'
+import { getPostUrlStyle, postHref } from '@/modules/gazette/lib/post-url'
 import { gazetteFeedPuckComponent, type GazetteFeedBlockProps } from './GazetteFeedBlock'
 
 export async function GazetteFeedBlockRsc(props: GazetteFeedBlockProps) {
@@ -11,9 +12,10 @@ export async function GazetteFeedBlockRsc(props: GazetteFeedBlockProps) {
 
   const imageIds = posts.map((p) => p.featuredImageId).filter((id): id is string => !!id)
   const authorIds = posts.map((p) => p.authorId).filter((id): id is string => !!id)
-  const [media, authors] = await Promise.all([
+  const [media, authors, style] = await Promise.all([
     imageIds.length ? prisma.media.findMany({ where: { id: { in: imageIds } }, select: { id: true, url: true } }) : Promise.resolve([]),
     authorIds.length ? prisma.user.findMany({ where: { id: { in: authorIds } }, select: { id: true, displayName: true, username: true } }) : Promise.resolve([]),
+    getPostUrlStyle(),
   ])
   const imageUrlById = Object.fromEntries(media.map((m) => [m.id, m.url]))
   const authorNameById = Object.fromEntries(authors.map((a) => [a.id, a.displayName ?? a.username]))
@@ -24,7 +26,7 @@ export async function GazetteFeedBlockRsc(props: GazetteFeedBlockProps) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gap: '1rem' }}>
       {posts.map((p) => (
-        <a key={p.id} href={`/gazette/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit', border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', display: 'block' }}>
+        <a key={p.id} href={postHref(p.slug, style)} style={{ textDecoration: 'none', color: 'inherit', border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', display: 'block' }}>
           {props.showImage !== 'no' && p.featuredImageId && imageUrlById[p.featuredImageId] && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imageUrlById[p.featuredImageId]} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }} />

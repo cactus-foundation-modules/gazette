@@ -1,3 +1,4 @@
+import { postUrl } from './post-url'
 import type { GazettePostListItem, GazetteSettings } from './types'
 
 function escapeXml(s: string): string {
@@ -20,15 +21,18 @@ export function buildRssXml(opts: {
   const channelDescription = settings.feedDescription ?? ''
   const selfUrl = `${siteUrl}/gazette/feed.xml`
 
-  const items = posts.map((p) => `
+  const items = posts.map((p) => {
+    const link = postUrl(siteUrl, p.slug, settings.postUrlStyle)
+    return `
     <item>
       <title>${escapeXml(p.title)}</title>
-      <link>${escapeXml(`${siteUrl}/gazette/${p.slug}`)}</link>
-      <guid isPermaLink="true">${escapeXml(`${siteUrl}/gazette/${p.slug}`)}</guid>
+      <link>${escapeXml(link)}</link>
+      <guid isPermaLink="true">${escapeXml(link)}</guid>
       <pubDate>${p.effectiveDate.toUTCString()}</pubDate>
       ${p.authorName ? `<dc:creator>${escapeXml(p.authorName)}</dc:creator>` : ''}
       <description>${escapeXml(p.excerpt ?? '')}</description>
-    </item>`).join('')
+    </item>`
+  }).join('')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
