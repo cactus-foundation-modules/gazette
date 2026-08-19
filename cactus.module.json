@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -220,6 +220,12 @@
       "id": "gazette",
       "import": "./lib/media-usage-provider",
       "component": "gazetteMediaUsageProvider"
+    },
+    {
+      "point": "core.media-reference-rewriters",
+      "id": "gazette",
+      "import": "./lib/media-reference-rewriter",
+      "component": "gazetteMediaReferenceRewriter"
     }
   ]
 }
