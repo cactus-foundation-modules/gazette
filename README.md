@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="module-art.webp" alt="Cactus Gazette Module" width="640" />
+</p>
+
 # Cactus Gazette Module
 
 A writing-first blog and news module for [Cactus](https://github.com/usersaynoso/cactus-foundation).
