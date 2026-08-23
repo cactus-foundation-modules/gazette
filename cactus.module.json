@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.24",
+  "version": "0.1.25",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -34,9 +34,7 @@
     }
   ],
   "requiredEnvVars": [],
-  "cookieCategories": [
-    "functional"
-  ],
+  "cookieCategories": [],
   "teardown": [
     "gz_post_tags",
     "gz_post_views",
