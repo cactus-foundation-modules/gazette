@@ -25,8 +25,16 @@ export async function buildPostMetadata(slug: string): Promise<Metadata> {
     alternates: { canonical: post.canonicalUrl ?? postUrl(siteUrl(), post.slug, style) },
     openGraph: {
       type: 'article',
+      // Social cards carry the post's own headline, not the keyword-first SEO
+      // title: nothing is being matched against a query on a Facebook or
+      // LinkedIn card, so the personality of the real title is what earns the
+      // click. The <title> tag above stays on seoTitle.
+      title: post.title || post.seoTitle || undefined,
       publishedTime: (post.publishedAt ?? post.scheduledFor ?? undefined)?.toISOString(),
       images: image?.url ? [{ url: image.url }] : undefined,
+    },
+    twitter: {
+      title: post.title || post.seoTitle || undefined,
     },
   }
 }
