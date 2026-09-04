@@ -1,6 +1,7 @@
 import { makeGazetteProseRscFieldDef } from './GazetteProse'
 import { gazettePullQuoteFieldDef } from './GazettePullQuote'
-import { gazetteCodeFieldDef, GazetteCodeRsc } from './GazetteCode'
+import { gazetteCodeFieldDef } from './GazetteCode'
+import { GazetteCodeRsc } from './GazetteCodeRsc'
 import { gazetteImageRscFieldDef } from './GazetteImage'
 import { gazetteDividerFieldDef } from './GazetteDivider'
 import type { TocHeading } from '@/modules/gazette/lib/toc'

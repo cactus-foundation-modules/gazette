@@ -1,9 +1,25 @@
-import { codeToHtml, createCssVariablesTheme } from 'shiki'
 import CodeCopyButton from './CodeCopyButton'
+
+// The code block's editor half, and the field definition both halves share.
+//
+// Nothing in this file may import shiki, and that is not a style preference.
+// bodyEditorConfig imports this file, PostEditor imports bodyEditorConfig, and
+// PostEditor is a client component - so anything reachable from here is compiled
+// into the post editor's browser bundle. When the shiki import lived here it took
+// the highlighter, its regex engine and every one of the ~350 grammars in the
+// default bundle with it, all so an editor canvas could render a <pre> of plain
+// text. The highlighting lives in GazetteCodeRsc.tsx, which only the server-side
+// config reaches.
 
 export type GazetteCodeProps = { code?: string; language?: string }
 
-const LANGUAGE_OPTIONS = [
+/**
+ * The languages the block offers, and therefore the only grammars
+ * GazetteCodeRsc has to load. Exported so the two cannot drift: adding a
+ * language here without adding its grammar there would leave the block offering
+ * something it cannot highlight.
+ */
+export const LANGUAGE_OPTIONS = [
   { value: 'plaintext', label: 'Plain text' },
   { value: 'bash', label: 'Bash' },
   { value: 'css', label: 'CSS' },
@@ -25,10 +41,14 @@ const LANGUAGE_OPTIONS = [
   { value: 'yaml', label: 'YAML' },
 ]
 
-const cssVariablesTheme = createCssVariablesTheme({ name: 'cactus', variablePrefix: '--gz-shiki-' })
+/** Escaping for the markup GazetteCodeRsc falls back to when it cannot highlight,
+ *  kept here so both halves of the block agree on it. */
+export function escapeCode(code: string): string {
+  return code.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!))
+}
 
-// Editor canvas: synchronous, plain text - avoids loading shiki's WASM highlighter
-// on every keystroke in the builder.
+// Editor canvas: synchronous, plain text - avoids loading a highlighter on every
+// keystroke in the builder.
 export function GazetteCode({ code = '', language = 'plaintext' }: GazetteCodeProps) {
   return (
     <figure className="gz-code">
@@ -37,26 +57,6 @@ export function GazetteCode({ code = '', language = 'plaintext' }: GazetteCodePr
         <CodeCopyButton code={code} />
       </div>
       <pre className="gz-code-pre"><code>{code}</code></pre>
-    </figure>
-  )
-}
-
-// RSC: server-highlighted with token colours driven by CSS variables (theme-aware,
-// no light/dark duplication needed).
-export async function GazetteCodeRsc({ code = '', language = 'plaintext' }: GazetteCodeProps) {
-  let html = ''
-  try {
-    html = await codeToHtml(code, { lang: language, theme: cssVariablesTheme })
-  } catch {
-    html = `<pre class="gz-code-pre"><code>${code.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!))}</code></pre>`
-  }
-  return (
-    <figure className="gz-code">
-      <div className="gz-code-header">
-        <span className="gz-code-lang">{language}</span>
-        <CodeCopyButton code={code} />
-      </div>
-      <div className="gz-code-highlighted" dangerouslySetInnerHTML={{ __html: html }} />
     </figure>
   )
 }
