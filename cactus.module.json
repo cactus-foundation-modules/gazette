@@ -1,6 +1,6 @@
 {
   "name": "gazette",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
@@ -20,7 +20,7 @@
     {
       "label": "Gazette",
       "path": "/m/gazette/posts",
-      "icon": "<path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>",
+      "icon": "<path d=\"M4 7h12v12H6a2 2 0 0 1-2-2z\"/><path d=\"M16 10h4v7a2 2 0 0 1-4 0z\"/><path d=\"M7 10h6M7 13h6M7 16h4\"/>",
       "permission": "gazette.access"
     }
   ],
