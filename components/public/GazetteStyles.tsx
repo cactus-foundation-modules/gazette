@@ -1,8 +1,14 @@
 // Scoped .gz-* rules for public gazette pages. Colours are tokens throughout -
 // no hardcoded hex - so the module respects the site's light/dark theme.
+// Shared, because this is rendered by every gazette surface on the page at once -
+// the feed block, the featured block, the category header, the post body - and a
+// gazette index was carrying four identical copies of 10 KB. One copy now,
+// however many of them ask.
+import { SharedStyle } from '@/components/SharedStyle'
+
 export default function GazetteStyles() {
   return (
-    <style>{`
+    <SharedStyle id="gazette" css={`
       .gz-container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
       .gz-wide { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
@@ -130,6 +136,6 @@ export default function GazetteStyles() {
       .gz-author-bio img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
 
       .gz-series-nav { margin: 2rem 0; padding: 1rem; border: 1px solid var(--color-border); border-radius: 8px; }
-    `}</style>
+    `} />
   )
 }
