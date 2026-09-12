@@ -112,6 +112,40 @@ export async function updatePost(id: string, fields: UpdatePostInput): Promise<v
   sets.push(Prisma.sql`"updated_at" = CURRENT_TIMESTAMP`)
   const setClause = Prisma.join(sets, ', ')
   await prisma.$executeRaw`UPDATE "gz_posts" SET ${setClause} WHERE "id" = ${id}`
+
+  // Make sure the cover has a small copy, because the post cards draw that rather
+  // than the full picture (see lib/post-cards.ts).
+  //
+  // Nearly every cover on the install this was written for is a product
+  // photograph, and those already have a copy - the shop makes one whenever a
+  // product is saved. A picture uploaded for a post and nothing else has nobody to
+  // make one for it, and that is the gap this closes: the media library shrinks
+  // what it is asked to shrink, and until now nothing asked on a post's behalf.
+  //
+  // Dynamically imported because the resizer pulls in sharp, and a static import
+  // would put an image library into every function that can reach this file.
+  // Never allowed to fail the save - a cover without a small copy is drawn at full
+  // size, which is heavier and perfectly correct.
+  if (fields.featuredImageId) {
+    try {
+      const media = await prisma.media.findUnique({
+        where: { id: fields.featuredImageId },
+        select: { url: true },
+      })
+      if (media?.url) {
+        const { generateImageRendition } = await import('@/lib/media/renditions')
+        const { THUMB_RENDITION_MAX_PX, THUMB_RENDITION_SUFFIX, THUMB_RENDITION_WORTHWHILE_BYTES } =
+          await import('@/lib/media/thumb-renditions')
+        await generateImageRendition(media.url, {
+          maxPx: THUMB_RENDITION_MAX_PX,
+          suffix: THUMB_RENDITION_SUFFIX,
+          worthwhileBytes: THUMB_RENDITION_WORTHWHILE_BYTES,
+        })
+      }
+    } catch (err) {
+      console.warn('[gazette] could not make a small copy of the cover picture:', err)
+    }
+  }
 }
 
 export async function publishPost(id: string, action: 'publish' | 'schedule' | 'unpublish', scheduledFor?: Date): Promise<void> {
