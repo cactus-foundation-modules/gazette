@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { Render } from '@puckeditor/core/rsc'
 import { prisma } from '@/lib/db/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { getVisiblePostBySlug, getApprovedCommentCountsForPosts, getTagsForPost, getReactionCounts } from '@/modules/gazette/lib/db'
@@ -23,6 +22,7 @@ import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/gazette/lib/inject-entry-context'
 import type { PuckData } from '@/modules/gazette/lib/types'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 // The post itself, shared by both addresses it can be served at: /gazette/<slug>
 // on the default URL style, and /<slug> when the site has moved posts to the
@@ -34,7 +34,7 @@ export default async function PostPageView({ slug }: { slug: string }) {
   const layout = await resolveThemeLayout('gazetteEntry', { moduleName: 'gazette', slug: post.slug })
   if (layout?.builderData) {
     const data = injectEntryContext(layout.builderData as PuckData, { entrySlug: post.slug })
-    return <Render config={getModuleLayoutPuckRscConfig('gazetteEntry') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('gazetteEntry') as any} data={data as any} />
   }
 
   const [settings, user, image, author, tags, commentCounts, reactionCounts] = await Promise.all([

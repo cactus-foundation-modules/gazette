@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Render } from '@puckeditor/core/rsc'
 import { prisma } from '@/lib/db/prisma'
 import { getVisiblePosts } from '@/modules/gazette/lib/db'
 import { getGazetteSettings } from '@/modules/gazette/lib/settings'
@@ -11,6 +10,7 @@ import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext } from '@/modules/gazette/lib/inject-category-context'
 import type { PuckData } from '@/modules/gazette/lib/types'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }
 
@@ -41,7 +41,7 @@ export default async function GazetteTagPage({ params, searchParams }: Props) {
     const data = injectCategoryContext(layout.builderData as PuckData, {
       heading: `Tag: ${tag[0].name}`, page, baseUrl: `/gazette/tag/${slug}`, tagSlug: slug,
     })
-    return <Render config={getModuleLayoutPuckRscConfig('gazetteCategory') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('gazetteCategory') as any} data={data as any} />
   }
 
   const { posts, total } = await getVisiblePosts({ page, perPage: settings.postsPerPage, tagSlug: slug })
