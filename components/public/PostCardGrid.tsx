@@ -14,7 +14,13 @@ import type { GazettePostCard, PostCardDisplay } from '@/modules/gazette/lib/typ
 //
 // readMoreLabel is the Gazette Feed block's own: only that block puts a "Read
 // more" line on a card, so left off the cards are exactly the listing's.
-export default function PostCardGrid({ cards, columns, display, emptyMessage, imageRatio, hover, readMoreLabel }: {
+//
+// eagerImageCount is how many cards, from the first, may fetch their picture
+// straight away. Zero unless the caller knows the grid opens the page: a block
+// dropped into a page builder layout cannot tell whether it sits at the top or
+// the bottom, and the cards the load-more button appends are never on screen
+// when they arrive.
+export default function PostCardGrid({ cards, columns, display, emptyMessage, imageRatio, hover, readMoreLabel, eagerImageCount = 0 }: {
   cards: GazettePostCard[]
   columns?: string
   display?: PostCardDisplay
@@ -22,6 +28,7 @@ export default function PostCardGrid({ cards, columns, display, emptyMessage, im
   imageRatio?: string
   hover?: string
   readMoreLabel?: string
+  eagerImageCount?: number
 }) {
   if (cards.length === 0) {
     return <p style={{ color: 'var(--color-text-muted)' }}>{emptyMessage ?? 'Nothing published yet - check back soon.'}</p>
@@ -34,7 +41,9 @@ export default function PostCardGrid({ cards, columns, display, emptyMessage, im
       data-ratio={imageRatio}
       data-hover={hover}
     >
-      {cards.map((card) => <PostCard key={card.id} card={card} display={display} readMoreLabel={readMoreLabel} />)}
+      {cards.map((card, index) => (
+        <PostCard key={card.id} card={card} display={display} readMoreLabel={readMoreLabel} eagerImage={index < eagerImageCount} />
+      ))}
     </div>
   )
 }
