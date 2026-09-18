@@ -39,6 +39,7 @@ export default async function PostEditorPage({ params }: Params) {
         currentUserId={user.id}
         canPublish={canPublishPost(access, user.id, post)}
         canReassignAuthor={access.isEditor}
+        canSaveTemplate={access.isEditor}
         postUrlStyle={postUrlStyle}
       />
     </div>

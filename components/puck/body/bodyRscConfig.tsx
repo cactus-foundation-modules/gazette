@@ -1,4 +1,4 @@
-import { makeGazetteProseRscFieldDef } from './GazetteProse'
+import { makeGazetteProseRscFieldDef } from './GazetteProseRsc'
 import { gazettePullQuoteFieldDef } from './GazettePullQuote'
 import { gazetteCodeFieldDef } from './GazetteCode'
 import { GazetteCodeRsc } from './GazetteCodeRsc'

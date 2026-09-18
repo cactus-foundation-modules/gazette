@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { errorResponse } from '@/lib/utils'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { verifyTurnstile } from '@/lib/auth/turnstile'
+import { getClientIp } from '@/lib/auth/rate-limit'
 import { getVisiblePostBySlug, getCommentById, checkCommentRateLimit, createComment } from '@/modules/gazette/lib/db'
 import { getGazetteSettings } from '@/modules/gazette/lib/settings'
 import { prisma } from '@/lib/db/prisma'
@@ -15,10 +16,6 @@ const Body = z.object({
   body: z.string().min(1).max(5000),
   'cf-turnstile-response': z.string().optional(),
 })
-
-function getClientIp(request: NextRequest): string | null {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null
-}
 
 export async function POST(request: NextRequest) {
   const parsed = Body.safeParse(await request.json().catch(() => ({})))
@@ -45,7 +42,11 @@ export async function POST(request: NextRequest) {
   const ok = await verifyTurnstile(parsed.data['cf-turnstile-response'])
   if (!ok) return errorResponse('Verification failed', 403)
 
-  const ip = getClientIp(request)
+  // Core's parser: the last x-forwarded-for hop (the one the platform added),
+  // or Cloudflare's header when the owner has said the site sits behind it.
+  // The leftmost hop this used to read is whatever the commenter typed.
+  const rawIp = await getClientIp(request)
+  const ip = rawIp === 'unknown' ? null : rawIp
   if (ip && !(await checkCommentRateLimit(ip))) {
     return errorResponse('Too many comments - please wait a few minutes and try again', 429)
   }

@@ -18,6 +18,7 @@ type Props = {
   currentUserId: string
   canPublish: boolean
   canReassignAuthor: boolean
+  canSaveTemplate: boolean
   postUrlStyle: PostUrlStyle
 }
 
@@ -27,7 +28,7 @@ function slugify(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
 }
 
-export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor, postUrlStyle }: Props) {
+export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor, canSaveTemplate, postUrlStyle }: Props) {
   const [title, setTitle] = useState(post.title)
   const [slug, setSlug] = useState(post.slug)
   const [slugTouched, setSlugTouched] = useState(true)
@@ -147,11 +148,15 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
   }
 
   async function saveAsTemplate() {
-    await fetch('/api/m/gazette/admin/templates', {
+    const res = await fetch('/api/m/gazette/admin/templates', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, builderData }),
-    })
+    }).catch(() => null)
+    if (!res?.ok) {
+      alert('Could not save this post as a template.')
+      return
+    }
     setTemplateSaved(true)
     setTimeout(() => setTemplateSaved(false), 2000)
   }
@@ -233,7 +238,9 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
             )}
             <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
             {previewUrl && <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', wordBreak: 'break-all' }}>{previewUrl}</div>}
-            <button type="button" className="btn btn-ghost btn-sm" onClick={saveAsTemplate}>{templateSaved ? 'Saved as template' : 'Save as Template'}</button>
+            {canSaveTemplate && (
+              <button type="button" className="btn btn-ghost btn-sm" onClick={saveAsTemplate}>{templateSaved ? 'Saved as template' : 'Save as Template'}</button>
+            )}
           </div>
         </div>
 

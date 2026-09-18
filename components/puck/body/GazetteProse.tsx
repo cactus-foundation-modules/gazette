@@ -1,7 +1,5 @@
 import React from 'react'
 import { renderProseHtml } from '@/modules/gazette/lib/prose'
-import { getHeadingIdsForBlock } from '@/modules/gazette/lib/toc'
-import type { TocHeading } from '@/modules/gazette/lib/toc'
 
 export type GazetteProseProps = { content?: unknown; id?: string }
 
@@ -19,17 +17,6 @@ export function GazetteProse(props: GazetteProseProps) {
    
   const html = renderProseHtml(content as any)
   return <div className="gz-prose" dangerouslySetInnerHTML={{ __html: html }} />
-}
-
-export function makeGazetteProseRsc(headings: TocHeading[]) {
-  return function GazetteProseRsc(props: GazetteProseProps) {
-    const { content, id = '' } = props
-    if (!content || React.isValidElement(content)) return <GazetteProse {...props} />
-    const ids = getHeadingIdsForBlock(headings, id)
-     
-    const html = renderProseHtml(content as any, ids)
-    return <div className="gz-prose" dangerouslySetInnerHTML={{ __html: html }} />
-  }
 }
 
 export const gazetteProseFieldDef = {
@@ -53,14 +40,4 @@ export const gazetteProseFieldDef = {
   render: GazetteProse,
 }
 
-// RSC variant: the richtext field type triggers a client-only hook (useRichtextProps)
-// even inside <Render>, so - mirroring core's own puckRscConfig treatment of
-// RichTextBlock - the RSC field def swaps to a plain textarea. Fields are never
-// shown for public rendering anyway; this only avoids that hook running server-side.
-export function makeGazetteProseRscFieldDef(headings: TocHeading[]) {
-  return {
-    ...gazetteProseFieldDef,
-    fields: { content: { type: 'textarea' as const, label: 'Content (TipTap JSON)' } },
-    render: makeGazetteProseRsc(headings),
-  }
-}
+// The RSC variants live in GazetteProseRsc.tsx (server-only, sanitised).
