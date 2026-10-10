@@ -21,7 +21,8 @@ Then install the module from the Cactus admin panel under Modules.
 
 ## Configuration
 
-Once installed, configure the module under Admin -> Gazette -> Settings, and
+Once installed, configure the module under Admin -> Settings -> General -> Gazette (importing
+posts from WordPress, Medium or Substack is the Import button on the posts list), and
 grant the `gazette.access` permission to whichever core role(s) should see the
 Gazette nav entry. Gazette's own roles (Contributor / Author / Editor) are then
 assigned per-user from Admin -> Gazette -> Roles by a core admin.

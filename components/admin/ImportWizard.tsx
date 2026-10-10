@@ -51,11 +51,13 @@ export default function ImportWizard() {
   }
 
   return (
-    <div style={{ maxWidth: 720 }}>
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+    <div>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         {(Object.keys(TYPE_LABELS) as ImportType[]).map((t) => (
           <button
             key={t}
+            type="button"
+            aria-pressed={type === t}
             className={`btn btn-sm ${type === t ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => { setType(t); setPreview(null); setSummary(null) }}
           >
@@ -65,12 +67,12 @@ export default function ImportWizard() {
       </div>
 
       {type === 'medium' && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
           Unzip your export and choose the HTML files inside the posts folder.
         </p>
       )}
       {type === 'substack' && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
           Unzip your export and choose posts.csv, plus the matching HTML files if you have them.
         </p>
       )}
@@ -87,9 +89,9 @@ export default function ImportWizard() {
       {summary && <p style={{ color: 'var(--color-success)', fontSize: '0.875rem' }}>{summary}</p>}
 
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        <button className="btn btn-secondary btn-sm" onClick={runPreview} disabled={busy || !files}>Preview import</button>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={runPreview} disabled={busy || !files}>Preview import</button>
         {preview && preview.length > 0 && (
-          <button className="btn btn-primary btn-sm" onClick={runImport} disabled={busy}>
+          <button type="button" className="btn btn-primary btn-sm" onClick={runImport} disabled={busy}>
             Import {preview.filter((p) => p.action === 'Import').length} posts
           </button>
         )}
@@ -103,10 +105,10 @@ export default function ImportWizard() {
               {preview.map((row, i) => (
                 <tr key={i}>
                   <td>{row.title}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>{row.slug}</td>
+                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{row.slug}</td>
                   <td style={{ fontSize: '0.8125rem' }}>{row.tags.join(', ') || '—'}</td>
                   <td style={{ fontSize: '0.8125rem' }}>{row.authorMatch}</td>
-                  <td><span className={`badge ${row.action === 'Import' ? 'badge-success' : 'badge-muted'}`}>{row.action}</span></td>
+                  <td><span className={`badge ${row.action === 'Import' ? 'badge-success' : 'badge-default'}`}>{row.action}</span></td>
                 </tr>
               ))}
             </tbody>

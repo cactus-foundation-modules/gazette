@@ -29,7 +29,7 @@ const TABS: Array<{ label: string; value: PostsTab }> = [
 ]
 
 function statusBadge(status: string) {
-  const cls = status === 'PUBLISHED' ? 'badge-success' : status === 'SCHEDULED' ? 'badge-info' : 'badge-muted'
+  const cls = status === 'PUBLISHED' ? 'badge-success' : status === 'SCHEDULED' ? 'badge-info' : 'badge-default'
   const label = status === 'PUBLISHED' ? 'Published' : status === 'SCHEDULED' ? 'Scheduled' : 'Draft'
   return <span className={`badge ${cls}`}>{label}</span>
 }

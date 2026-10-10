@@ -5,6 +5,7 @@ import type { PostsTab } from '@/modules/gazette/lib/db'
 import { prisma } from '@/lib/db/prisma'
 import GazetteNav from '@/modules/gazette/components/admin/GazetteNav'
 import PostList from '@/modules/gazette/components/admin/PostList'
+import ImportPostsButton from '@/modules/gazette/components/admin/ImportPostsButton'
 import { headers } from 'next/headers'
 
 export const metadata = { title: 'Gazette Posts — Admin' }
@@ -52,7 +53,11 @@ export default async function GazettePostsPage({ searchParams }: Props) {
       <GazetteNav access={access} />
       <div className="page-header">
         <h1 className="page-title">Gazette</h1>
-        <a href={`/${adminPath}/m/gazette/posts/new`} className="btn btn-primary">New Post</a>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {/* Same key as the import itself (editors only) - see api/admin/gazette/import. */}
+          {access.isEditor && <ImportPostsButton />}
+          <a href={`/${adminPath}/m/gazette/posts/new`} className="btn btn-primary">New Post</a>
+        </div>
       </div>
 
       <PostList
