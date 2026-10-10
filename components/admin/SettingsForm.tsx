@@ -37,6 +37,16 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
       )}
       <div className="card" style={{ padding: '1rem' }}>
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>General</h3>
+        <div className="settings-field">
+        <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Posts per page</label>
+        <input
+          type="number"
+          value={settings.postsPerPage}
+          onChange={(e) => set('postsPerPage', Number(e.target.value))}
+          style={{ width: 100, padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', marginBottom: '0.75rem' }}
+        />
+        </div>
+        <div className="settings-field">
         <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Posts per page</label>
         <input
           type="number"
@@ -57,6 +67,7 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
           <option value="PREFIXED">Under the gazette (/gazette/your-post)</option>
           <option value="ROOT">Straight off the home page (/your-post)</option>
         </select>
+        </div>
         <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', margin: '0.375rem 0 0' }}>
           Change this and old post links keep working - they send readers to the new address on their own.
           The listing, tags, series and archive pages stay under /gazette either way.
@@ -69,12 +80,14 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
           <input type="checkbox" checked={settings.rssEnabled} onChange={(e) => set('rssEnabled', e.target.checked)} />
           Enable RSS feed
         </label>
-        <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Feed title</label>
-        <input
-          value={settings.feedTitle ?? ''}
-          onChange={(e) => set('feedTitle', e.target.value || null)}
-          style={{ width: '100%', padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', marginBottom: '0.75rem' }}
-        />
+        <div className="settings-field">
+          <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Feed title</label>
+          <input
+            value={settings.feedTitle ?? ''}
+            onChange={(e) => set('feedTitle', e.target.value || null)}
+            style={{ width: '100%', padding: '0.375rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', marginBottom: '0.75rem' }}
+          />
+        </div>
         <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Feed description</label>
         <textarea
           value={settings.feedDescription ?? ''}
@@ -90,6 +103,7 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
           <input type="checkbox" checked={settings.commentsEnabled} onChange={(e) => set('commentsEnabled', e.target.checked)} />
           Enable comments
         </label>
+        <div className="settings-field">
         <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Visibility</label>
         <select
           value={settings.commentsVisibility}
@@ -99,6 +113,8 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
           <option value="PUBLIC">Public</option>
           <option value="MEMBERS_ONLY">Members only</option>
         </select>
+        </div>
+        <div className="settings-field">
         <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Moderation</label>
         <select
           value={settings.commentModeration}
@@ -108,6 +124,7 @@ export default function SettingsForm({ settings: initial, showSave = true }: { s
           <option value="PRE">Before publishing</option>
           <option value="POST">After publishing</option>
         </select>
+        </div>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem' }}>
           <input type="checkbox" checked={settings.commentsThreaded} onChange={(e) => set('commentsThreaded', e.target.checked)} />
           Threaded replies
