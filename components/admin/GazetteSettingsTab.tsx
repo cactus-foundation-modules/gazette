@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react'
 import type { GazetteSettings } from '@/modules/gazette/lib/types'
 import SettingsForm from './SettingsForm'
 import ImportWizard from './ImportWizard'
+import { TabStrip } from '@/components/admin/TabStrip'
 
 export function GazetteSettingsTab() {
   const [settings, setSettings] = useState<GazetteSettings | null>(null)
   const [forbidden, setForbidden] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [sub, setSub] = useState<'settings' | 'import'>('settings')
 
   useEffect(() => {
     fetch('/api/m/gazette/admin/settings').then(async (res) => {
@@ -25,12 +27,21 @@ export function GazetteSettingsTab() {
 
   return (
     <div>
-      <SettingsForm settings={settings} />
-
-      <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--color-border)', maxWidth: 720 }}>
-        <h3 style={{ margin: '0 0 1rem', fontSize: '0.9375rem' }}>Import</h3>
-        <ImportWizard />
+      <TabStrip
+        items={[
+          { key: 'settings', label: 'Settings', active: sub === 'settings', onClick: () => setSub('settings') },
+          { key: 'import', label: 'Import', active: sub === 'import', onClick: () => setSub('import') },
+        ]}
+      />
+      <div hidden={sub !== 'settings'}>
+        <SettingsForm settings={settings} showSave={sub === 'settings'} />
       </div>
+      {sub === 'import' && (
+        <div className="card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 1rem', fontSize: '0.9375rem' }}>Import</h3>
+          <ImportWizard />
+        </div>
+      )}
     </div>
   )
 }

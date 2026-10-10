@@ -2,8 +2,11 @@
 
 import { useState } from 'react'
 import type { GazetteSettings } from '@/modules/gazette/lib/types'
+import { SettingsHeaderActions, SettingsHeaderStatus } from '@/components/admin/SettingsHeaderActions'
 
-export default function SettingsForm({ settings: initial }: { settings: GazetteSettings }) {
+// `showSave` is false while another sub-tab is in front: the form stays mounted so
+// unsaved edits survive a trip to the Import tab, but its Save button should not.
+export default function SettingsForm({ settings: initial, showSave = true }: { settings: GazetteSettings; showSave?: boolean }) {
   const [settings, setSettings] = useState(initial)
   const [newEmoji, setNewEmoji] = useState('')
   const [saved, setSaved] = useState(false)
@@ -25,7 +28,13 @@ export default function SettingsForm({ settings: initial }: { settings: GazetteS
   const reactionSet = settings.reactionSet ?? []
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: 560 }}>
+    <div className="settings-masonry">
+      {showSave && (
+        <SettingsHeaderActions>
+          <SettingsHeaderStatus message={saved ? 'Saved' : null} />
+          <button className="btn btn-primary" onClick={save}>Save changes</button>
+        </SettingsHeaderActions>
+      )}
       <div className="card" style={{ padding: '1rem' }}>
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>General</h3>
         <label style={{ fontSize: '0.8125rem', display: 'block', marginBottom: '0.25rem' }}>Posts per page</label>
@@ -135,8 +144,6 @@ export default function SettingsForm({ settings: initial }: { settings: GazetteS
           </button>
         </div>
       </div>
-
-      <button className="btn btn-primary" onClick={save}>{saved ? 'Saved' : 'Save settings'}</button>
     </div>
   )
 }
