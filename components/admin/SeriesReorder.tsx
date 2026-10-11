@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import type { GazetteSeries, GazettePostListItem } from '@/modules/gazette/lib/types'
 
 export default function SeriesReorder({ series, posts, isEditor }: {
@@ -17,6 +18,7 @@ export default function SeriesReorder({ series, posts, isEditor }: {
   const [description, setDescription] = useState(series.description ?? '')
   const [order, setOrder] = useState(posts)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [askConfirm, confirmNode] = useAdminConfirm()
 
   async function saveDetails() {
     await fetch(`/api/m/gazette/admin/series/${series.id}`, {
@@ -28,7 +30,7 @@ export default function SeriesReorder({ series, posts, isEditor }: {
   }
 
   async function deleteSeries() {
-    if (!confirm('Delete this series? Posts are kept, just detached from the series.')) return
+    if (!(await askConfirm({ title: 'Delete this series?', message: 'Posts are kept, just detached from the series.' }))) return
     await fetch(`/api/m/gazette/admin/series/${series.id}`, { method: 'DELETE' })
     router.push(`/${adminPath}/m/gazette/series`)
   }
@@ -50,6 +52,7 @@ export default function SeriesReorder({ series, posts, isEditor }: {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: 600 }}>
+      {confirmNode}
       <div className="card" style={{ padding: '1rem' }}>
         <label style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Title</label>
         <input

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { TabStrip } from '@/components/admin/TabStrip'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import type { GazettePostListItem, GazetteTag } from '@/modules/gazette/lib/types'
 import type { PostsTab } from '@/modules/gazette/lib/db'
 
@@ -42,6 +43,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
   const [busy, setBusy] = useState(false)
   const [rowBusy, setRowBusy] = useState<Record<string, boolean>>({})
   const [search, setSearch] = useState(q)
+  const [askConfirm, confirmNode] = useAdminConfirm()
 
   function toggleAll() {
     setSelected(selected.size === posts.length ? new Set() : new Set(posts.map((p) => p.id)))
@@ -58,7 +60,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
 
   async function deleteSelected() {
     if (!selected.size) return
-    if (!confirm(`Delete ${selected.size} posts? This cannot be undone.`)) return
+    if (!(await askConfirm({ title: `Delete ${selected.size} posts?`, message: 'This cannot be undone.' }))) return
     setBusy(true)
     await fetch('/api/m/gazette/admin/posts/bulk', {
       method: 'POST',
@@ -71,7 +73,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
   }
 
   async function rowDelete(id: string) {
-    if (!confirm('Delete this post? This cannot be undone.')) return
+    if (!(await askConfirm({ title: 'Delete this post?', message: 'This cannot be undone.' }))) return
     setRowBusy((prev) => ({ ...prev, [id]: true }))
     await fetch(`/api/m/gazette/admin/posts/${id}`, { method: 'DELETE' })
     setRowBusy((prev) => ({ ...prev, [id]: false }))
@@ -94,6 +96,7 @@ export default function PostList({ posts, total, page, totalPages, tab, q }: Pro
 
   return (
     <div>
+      {confirmNode}
       <TabStrip
         items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?tab=${t.value}`, active: tab === t.value }))}
         trailing={<span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>{total} total</span>}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { TabStrip } from '@/components/admin/TabStrip'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import type { GazetteComment } from '@/modules/gazette/lib/types'
 
 type Row = GazetteComment & { postTitle: string }
@@ -23,6 +24,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [replying, setReplying] = useState<string | null>(null)
   const [replyBody, setReplyBody] = useState('')
+  const [askConfirm, confirmNode] = useAdminConfirm()
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -54,7 +56,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
   }
 
   async function rowDelete(id: string) {
-    if (!confirm('Delete this comment?')) return
+    if (!(await askConfirm({ title: 'Delete this comment?', message: 'It is removed from the post straight away.' }))) return
     await fetch(`/api/m/gazette/admin/comments/${id}`, { method: 'DELETE' })
     router.refresh()
   }
@@ -73,6 +75,7 @@ export default function CommentsScreen({ comments, total, page, status }: { comm
 
   return (
     <div>
+      {confirmNode}
       <TabStrip
         items={TABS.map((t) => ({ key: t.value, label: t.label, href: `${base}?status=${t.value}`, active: status === t.value }))}
         trailing={<span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>{total} total</span>}

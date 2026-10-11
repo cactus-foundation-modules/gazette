@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 
 export default function TemplateList({ templates, isEditor }: { templates: Array<{ id: string; title: string }>; isEditor: boolean }) {
   const router = useRouter()
   const [editing, setEditing] = useState<string | null>(null)
   const [title, setTitle] = useState('')
+  const [askConfirm, confirmNode] = useAdminConfirm()
 
   async function rename(id: string) {
     await fetch(`/api/m/gazette/admin/templates/${id}`, {
@@ -19,7 +21,7 @@ export default function TemplateList({ templates, isEditor }: { templates: Array
   }
 
   async function remove(id: string) {
-    if (!confirm('Delete this template?')) return
+    if (!(await askConfirm({ title: 'Delete this template?', message: 'It is gone for good.' }))) return
     await fetch(`/api/m/gazette/admin/templates/${id}`, { method: 'DELETE' })
     router.refresh()
   }
@@ -34,6 +36,7 @@ export default function TemplateList({ templates, isEditor }: { templates: Array
 
   return (
     <div className="table-wrapper">
+      {confirmNode}
       <table>
         <thead><tr><th>Title</th>{isEditor && <th></th>}</tr></thead>
         <tbody>
