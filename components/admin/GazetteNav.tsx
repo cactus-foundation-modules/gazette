@@ -1,33 +1,13 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
-import { useAdminPath } from '@/components/admin/AdminPathContext'
-import { TabStrip } from '@/components/admin/TabStrip'
+import { getSessionFromCookie } from '@/lib/auth/session'
+import { resolveExtensionTabs } from '@/lib/modules/extension-tabs'
+import GazetteNavTabs from '@/modules/gazette/components/admin/GazetteNavTabs'
 import type { GazetteAccess } from '@/modules/gazette/lib/types'
 
-const TABS = [
-  { label: 'Posts', segment: 'posts', editorOnly: false },
-  { label: 'Tags', segment: 'tags', editorOnly: false },
-  { label: 'Series', segment: 'series', editorOnly: false },
-  { label: 'Authors', segment: 'authors', editorOnly: false },
-  { label: 'Comments', segment: 'comments', editorOnly: true },
-  { label: 'Templates', segment: 'templates', editorOnly: false },
-]
-
-export default function GazetteNav({ access }: { access: GazetteAccess }) {
-  const pathname = usePathname()
-  const adminPath = useAdminPath()
-  const base = `/${adminPath}/m/gazette`
-
-  const tabs = TABS.filter((t) => !t.editorOnly || access.isEditor)
-
-  return (
-    <TabStrip
-      style={{ marginBottom: '1.5rem' }}
-      items={tabs.map((tab) => {
-        const href = `${base}/${tab.segment}`
-        return { key: tab.segment, label: tab.label, href, active: !!pathname?.startsWith(href) }
-      })}
-    />
-  )
+// The tab strip every Gazette admin page opens with. Server-side so it can ask which
+// tabs other modules have published into `gazette.admin-tabs` (see the [tab] page);
+// a site with none gets exactly the tabs Gazette itself ships.
+export default async function GazetteNav({ access }: { access: GazetteAccess }) {
+  const user = await getSessionFromCookie()
+  const extra = (await resolveExtensionTabs('gazette.admin-tabs', user)).map((t) => ({ id: t.id, label: t.label }))
+  return <GazetteNavTabs access={access} extra={extra} />
 }
