@@ -1,10 +1,10 @@
 {
   "name": "gazette",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "tablePrefix": "gz_",
   "description": "A blog and news module. Write, schedule and publish posts with tags, series, comments and reactions.",
   "publicBasePath": "gazette",
-  "requiresCoreVersion": "0.5.1772",
+  "requiresCoreVersion": "0.5.1821",
   "publicRootSlug": {
     "page": "./app/root/[slug]/page",
     "claimImport": "./lib/root-slug",

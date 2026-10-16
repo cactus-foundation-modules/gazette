@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Puck } from '@puckeditor/core'
 import type { Data, CustomField } from '@puckeditor/core'
 import '@puckeditor/core/no-external.css'
+import { tabbedFieldsOverride } from '@/lib/puck/tabs/TabbedFieldsOverride'
 import { bodyEditorConfig } from '@/modules/gazette/components/puck/body/bodyEditorConfig'
 import { OgImagePickerField } from '@/lib/puck/MediaPickerField'
 import TagMultiSelect from './TagMultiSelect'
@@ -23,6 +24,9 @@ type Props = {
 }
 
 const AUTOSAVE_DEBOUNCE_MS = 1500
+
+// Module-level so Puck sees the same override object on every render.
+const PUCK_OVERRIDES = { fields: tabbedFieldsOverride }
 
 function slugify(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
@@ -198,6 +202,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
         <div style={{ flex: 1, minHeight: 400, border: '1px solid var(--color-border)', borderRadius: 6, overflow: 'hidden' }}>
           <Puck
             config={bodyEditorConfig as any}
+            overrides={PUCK_OVERRIDES}
             data={builderData as unknown as Data}
             onChange={handleBuilderChange}
             iframe={{ enabled: false }}
