@@ -5,7 +5,6 @@ import { getPostUrlStyle } from '@/modules/gazette/lib/post-url'
 import { resolveExtensionTabs } from '@/lib/modules/extension-tabs'
 import { editorPanelPost } from '@/modules/gazette/lib/post-events'
 import { siteUrl } from '@/modules/gazette/lib/site-url'
-import GazetteNav from '@/modules/gazette/components/admin/GazetteNav'
 import PostEditor from '@/modules/gazette/components/admin/PostEditor'
 import { notFound } from 'next/navigation'
 
@@ -42,22 +41,21 @@ export default async function PostEditorPage({ params }: Params) {
     : []
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 6rem)' }}>
-      <GazetteNav access={access} />
-      <PostEditor
-        post={{ ...post, tagIds }}
-        tags={tags}
-        series={series}
-        authors={authors}
-        currentUserId={user.id}
-        canPublish={canPublishPost(access, user.id, post)}
-        canReassignAuthor={access.isEditor}
-        canSaveTemplate={access.isEditor}
-        postUrlStyle={postUrlStyle}
-        panels={panels}
-        siteBase={siteUrl()}
-        initialImageUrl={panelPost?.imageUrl ?? null}
-      />
-    </div>
+    // The editor takes the whole screen, like the layout editor: the way back to
+    // the posts is its own back link, so the tab strip is left off this page.
+    <PostEditor
+      post={{ ...post, tagIds }}
+      tags={tags}
+      series={series}
+      authors={authors}
+      currentUserId={user.id}
+      canPublish={canPublishPost(access, user.id, post)}
+      canReassignAuthor={access.isEditor}
+      canSaveTemplate={access.isEditor}
+      postUrlStyle={postUrlStyle}
+      panels={panels}
+      siteBase={siteUrl()}
+      initialImageUrl={panelPost?.imageUrl ?? null}
+    />
   )
 }
