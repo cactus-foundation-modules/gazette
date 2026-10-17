@@ -4,6 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { getGazetteAccess, canEditPost, canDeletePost, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { getPostById, updatePost, deletePost, setPostTags, getTagIdsForPost } from '@/modules/gazette/lib/db'
+import { announcePostStatus } from '@/modules/gazette/lib/post-events'
 import { ensureUniquePostSlug, RESERVED_POST_SLUGS } from '@/modules/gazette/lib/slug'
 
 type Params = { params: Promise<{ id: string }> }
@@ -85,5 +86,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   if (!canDeletePost(access, user.id, post)) return errorResponse('Forbidden', 403)
 
   await deletePost(id)
+  await announcePostStatus(id, 'delete')
   return NextResponse.json({ ok: true })
 }

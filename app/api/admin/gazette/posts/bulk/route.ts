@@ -4,6 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { getGazetteAccess, canDeletePost, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { getPostById, bulkDeletePosts } from '@/modules/gazette/lib/db'
+import { announcePostStatus } from '@/modules/gazette/lib/post-events'
 
 const Body = z.object({ action: z.literal('delete'), ids: z.array(z.string()).min(1).max(200) })
 
@@ -27,5 +28,6 @@ export async function POST(request: NextRequest) {
   }
 
   await bulkDeletePosts(allowed)
+  for (const id of allowed) await announcePostStatus(id, 'delete')
   return NextResponse.json({ ok: true, deleted: allowed.length, forbidden })
 }

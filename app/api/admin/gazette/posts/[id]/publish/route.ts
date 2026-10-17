@@ -4,6 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { getGazetteAccess, canPublishPost, canViewGazetteAdmin } from '@/modules/gazette/lib/permissions'
 import { getPostById, publishPost } from '@/modules/gazette/lib/db'
+import { announcePostStatus } from '@/modules/gazette/lib/post-events'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   } else {
     await publishPost(id, action)
   }
+  await announcePostStatus(id, action)
 
   return NextResponse.json({ ok: true })
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Puck } from '@puckeditor/core'
 import type { Data, CustomField } from '@puckeditor/core'
 import '@puckeditor/core/no-external.css'
@@ -10,6 +10,10 @@ import { OgImagePickerField } from '@/lib/puck/MediaPickerField'
 import TagMultiSelect from './TagMultiSelect'
 import type { GazettePost, GazetteTag, GazetteSeries, PostUrlStyle, PuckData } from '@/modules/gazette/lib/types'
 import type { AuthorListItem } from '@/modules/gazette/lib/db'
+import {
+  EDITOR_BEFORE_PUBLISH_EVENT, EDITOR_STATE_EVENT,
+  type GazetteBeforePublishDetail, type GazetteEditorPanelPost,
+} from '@/modules/gazette/lib/editor-panels'
 
 type Props = {
   post: GazettePost & { tagIds: string[] }
@@ -21,6 +25,12 @@ type Props = {
   canReassignAuthor: boolean
   canSaveTemplate: boolean
   postUrlStyle: PostUrlStyle
+  /** Cards other modules add to the sidebar (`gazette.post-editor-panels`), already rendered by the page. */
+  panels?: ReactNode[]
+  /** The site's own address, so the panels are told the post's real public URL. */
+  siteBase?: string
+  /** The featured image's address as the page loaded it, handed on to the panels. */
+  initialImageUrl?: string | null
 }
 
 const AUTOSAVE_DEBOUNCE_MS = 1500
@@ -32,7 +42,7 @@ function slugify(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
 }
 
-export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor, canSaveTemplate, postUrlStyle }: Props) {
+export default function PostEditor({ post, tags, series, authors, currentUserId, canPublish, canReassignAuthor, canSaveTemplate, postUrlStyle, panels = [], siteBase = '', initialImageUrl = null }: Props) {
   const [title, setTitle] = useState(post.title)
   const [slug, setSlug] = useState(post.slug)
   const [slugTouched, setSlugTouched] = useState(true)
@@ -61,7 +71,31 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [templateSaved, setTemplateSaved] = useState(false)
 
+  const [publishError, setPublishError] = useState('')
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const initialImageIdRef = useRef(post.featuredImageId ?? '')
+
+  // Keep the sidebar panels told what the post looks like now. Child effects run
+  // before this one, so every panel is already listening on the first send.
+  useEffect(() => {
+    if (panels.length === 0) return
+    const live = status === 'SCHEDULED' ? scheduledFor : publishedAt
+    const detail: GazetteEditorPanelPost = {
+      id: post.id,
+      title,
+      excerpt: excerpt || null,
+      // Same rule as lib/post-url's postHref, which this browser file cannot import (it reaches the database).
+      url: `${siteBase}${postUrlStyle === 'ROOT' ? '/' : '/gazette/'}${slug}`,
+      // Only the id is known here once the image is changed; the panels get the
+      // real address from the server again when the post is published.
+      imageUrl: featuredImageId && featuredImageId === initialImageIdRef.current ? initialImageUrl : null,
+      status,
+      liveAt: live ? new Date(live).toISOString() : null,
+      isPrivate,
+    }
+    window.dispatchEvent(new CustomEvent(EDITOR_STATE_EVENT, { detail }))
+  }, [panels.length, post.id, title, excerpt, slug, postUrlStyle, siteBase, featuredImageId, initialImageUrl, status, scheduledFor, publishedAt, isPrivate])
 
   const doAutosave = useCallback(async (fields: Record<string, unknown>) => {
     setSaving(true)
@@ -121,12 +155,32 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
      
   })
 
+  // Let every sidebar panel save what it is holding before the post goes. A
+  // panel that refuses (a social post too long, say) stops the publish.
+  async function panelsReady(action: 'publish' | 'schedule', liveAt: string | null): Promise<string | null> {
+    if (panels.length === 0) return null
+    const work: Promise<unknown>[] = []
+    const detail: GazetteBeforePublishDetail = { action, liveAt, waitFor: (p) => { work.push(p) } }
+    window.dispatchEvent(new CustomEvent(EDITOR_BEFORE_PUBLISH_EVENT, { detail }))
+    const results = await Promise.allSettled(work)
+    const refused = results.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+    if (!refused) return null
+    return refused.reason instanceof Error ? refused.reason.message : String(refused.reason)
+  }
+
   async function publishAction(action: 'publish' | 'schedule' | 'unpublish') {
     setPublishBusy(true)
+    setPublishError('')
     const body: Record<string, unknown> = { action }
     if (action === 'schedule') {
       if (!scheduleInput) { setPublishBusy(false); return }
       body.scheduledFor = new Date(scheduleInput).toISOString()
+    }
+    if (action !== 'unpublish') {
+      // The post's own pending edits first, so whatever is told it has gone live sees the saved title and address.
+      if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; await doAutosave(currentFields()) }
+      const problem = await panelsReady(action, action === 'schedule' ? (body.scheduledFor as string) : new Date().toISOString())
+      if (problem) { setPublishError(problem); setPublishBusy(false); return }
     }
     const res = await fetch(`/api/m/gazette/admin/posts/${post.id}/publish`, {
       method: 'POST',
@@ -137,6 +191,9 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
       if (action === 'publish') { setStatus('PUBLISHED'); setPublishedAt(new Date()); setScheduledFor(null) }
       else if (action === 'schedule') { setStatus('SCHEDULED'); setScheduledFor(new Date(scheduleInput)) }
       else { setStatus('DRAFT'); setScheduledFor(null) }
+    } else {
+      const data = await res.json().catch(() => null) as { error?: string } | null
+      setPublishError(data?.error ?? 'Could not change the post. Try again.')
     }
     setPublishBusy(false)
   }
@@ -242,12 +299,15 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
               </>
             )}
             <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
+            {publishError && <div className="alert alert-danger" role="alert" style={{ fontSize: '0.75rem', margin: 0 }}>{publishError}</div>}
             {previewUrl && <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', wordBreak: 'break-all' }}>{previewUrl}</div>}
             {canSaveTemplate && (
               <button type="button" className="btn btn-ghost btn-sm" onClick={saveAsTemplate}>{templateSaved ? 'Saved as template' : 'Save as Template'}</button>
             )}
           </div>
         </div>
+
+        {panels}
 
         <div className="card" style={{ padding: '1rem' }}>
           <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Visibility</h3>

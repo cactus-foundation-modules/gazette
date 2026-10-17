@@ -2,6 +2,9 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { getGazetteAccess, canViewGazetteAdmin, canEditPost, canPublishPost } from '@/modules/gazette/lib/permissions'
 import { getPostById, getTagIdsForPost, listTags, listSeries, listAuthors } from '@/modules/gazette/lib/db'
 import { getPostUrlStyle } from '@/modules/gazette/lib/post-url'
+import { resolveExtensionTabs } from '@/lib/modules/extension-tabs'
+import { editorPanelPost } from '@/modules/gazette/lib/post-events'
+import { siteUrl } from '@/modules/gazette/lib/site-url'
 import GazetteNav from '@/modules/gazette/components/admin/GazetteNav'
 import PostEditor from '@/modules/gazette/components/admin/PostEditor'
 import { notFound } from 'next/navigation'
@@ -28,6 +31,16 @@ export default async function PostEditorPage({ params }: Params) {
   const [tagIds, tags, series, postUrlStyle] = await Promise.all([getTagIdsForPost(id), listTags(), listSeries(), getPostUrlStyle()])
   const authors = access.isEditor ? await listAuthors() : []
 
+  // Cards other modules add to the sidebar (`gazette.post-editor-panels`), each
+  // gated by its own permission. Rendered here so a site with none pays nothing.
+  const [panelDefs, panelPost] = await Promise.all([
+    resolveExtensionTabs('gazette.post-editor-panels', user),
+    editorPanelPost(id),
+  ])
+  const panels = panelPost
+    ? panelDefs.map((p) => <p.Component key={`${p.moduleName}:${p.id}`} post={panelPost} />)
+    : []
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 6rem)' }}>
       <GazetteNav access={access} />
@@ -41,6 +54,9 @@ export default async function PostEditorPage({ params }: Params) {
         canReassignAuthor={access.isEditor}
         canSaveTemplate={access.isEditor}
         postUrlStyle={postUrlStyle}
+        panels={panels}
+        siteBase={siteUrl()}
+        initialImageUrl={panelPost?.imageUrl ?? null}
       />
     </div>
   )
