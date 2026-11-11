@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 import { publicVisibleSql, effectivePublishedSql } from './visibility'
+import { normaliseProseContent } from './prose-normalise'
 import type {
   GazettePost, GazettePostListItem, GazettePostSort, GazetteTag, GazetteTagWithCount, GazetteSeries,
   GazetteAuthorProfile, GazetteComment, GazettePostTemplate, PuckData,
@@ -52,7 +53,7 @@ export async function createPost(data: {
   const rows = await prisma.$queryRaw<[{ id: string }]>`
     INSERT INTO "gz_posts" ("id", "title", "slug", "author_id", "builder_data")
     VALUES (gen_random_uuid()::text, ${data.title}, ${data.slug}, ${data.authorId},
-      ${data.templateBuilderData ? JSON.stringify(data.templateBuilderData) : null}::jsonb)
+      ${data.templateBuilderData ? JSON.stringify(normaliseProseContent(data.templateBuilderData)) : null}::jsonb)
     RETURNING "id"
   `
   return rows[0]
@@ -97,7 +98,7 @@ export async function updatePost(id: string, fields: UpdatePostInput): Promise<v
   if (fields.title !== undefined) sets.push(Prisma.sql`"title" = ${fields.title}`)
   if (fields.slug !== undefined) sets.push(Prisma.sql`"slug" = ${fields.slug}`)
   if (fields.excerpt !== undefined) sets.push(Prisma.sql`"excerpt" = ${fields.excerpt}`)
-  if (fields.builderData !== undefined) sets.push(Prisma.sql`"builder_data" = ${fields.builderData ? JSON.stringify(fields.builderData) : null}::jsonb`)
+  if (fields.builderData !== undefined) sets.push(Prisma.sql`"builder_data" = ${fields.builderData ? JSON.stringify(normaliseProseContent(fields.builderData)) : null}::jsonb`)
   if (fields.featuredImageId !== undefined) sets.push(Prisma.sql`"featured_image_id" = ${fields.featuredImageId}`)
   if (fields.authorId !== undefined) sets.push(Prisma.sql`"author_id" = ${fields.authorId}`)
   if (fields.seriesId !== undefined) sets.push(Prisma.sql`"series_id" = ${fields.seriesId}`)
@@ -841,7 +842,7 @@ export async function getTemplateById(id: string): Promise<GazettePostTemplate |
 export async function createTemplate(title: string, builderData: PuckData | null): Promise<{ id: string }> {
   const rows = await prisma.$queryRaw<[{ id: string }]>`
     INSERT INTO "gz_post_templates" ("id", "title", "builder_data")
-    VALUES (gen_random_uuid()::text, ${title}, ${builderData ? JSON.stringify(builderData) : null}::jsonb)
+    VALUES (gen_random_uuid()::text, ${title}, ${builderData ? JSON.stringify(normaliseProseContent(builderData)) : null}::jsonb)
     RETURNING "id"
   `
   return rows[0]

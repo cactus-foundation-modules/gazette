@@ -1,6 +1,6 @@
 import type { JSONContent } from '@tiptap/core'
 import type { PuckData } from './types'
-import { extractProseText } from './prose'
+import { extractProseText, htmlToText } from './prose'
 
 export type TocHeading = { id: string; text: string; level: number; blockId: string }
 
@@ -37,6 +37,17 @@ function walkHeadings(node: JSONContent, level2and3Only: boolean): Array<{ text:
   return out
 }
 
+// The HTML-string shape of a block's content (what Puck's richtext field
+// saves). Matches <h2>/<h3> in document order - the same order injectHeadingIds
+// swaps opening tags in, so the ids line up with the rendered markup.
+function htmlHeadings(html: string): Array<{ text: string; level: number }> {
+  const out: Array<{ text: string; level: number }> = []
+  for (const m of html.matchAll(/<h([23])(?:\s[^>]*)?>([\s\S]*?)<\/h\1\s*>/g)) {
+    out.push({ text: htmlToText(m[2] ?? ''), level: Number(m[1]) })
+  }
+  return out
+}
+
 // Walks every GazetteProse block in document order and assigns deterministic,
 // deduplicated ids to its H2/H3 headings - the ids a page-level TableOfContents
 // links to, and the same ids injected into each block's rendered HTML.
@@ -47,10 +58,11 @@ export function extractHeadings(builderData: PuckData | null): TocHeading[] {
 
   for (const block of builderData.content) {
     if (block?.type !== 'GazetteProse') continue
-    const content = block.props?.content as JSONContent | undefined
+    const content = block.props?.content as JSONContent | string | undefined
     if (!content) continue
     const blockId = (block.props?.id as string) ?? ''
-    for (const h of walkHeadings(content, true)) {
+    const found = typeof content === 'string' ? htmlHeadings(content) : walkHeadings(content, true)
+    for (const h of found) {
       headings.push({ id: slugifyHeading(h.text, usedIds), text: h.text, level: h.level, blockId })
     }
   }

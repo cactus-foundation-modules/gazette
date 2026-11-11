@@ -4,8 +4,9 @@ import { renderProseHtml } from '@/modules/gazette/lib/prose'
 export type GazetteProseProps = { content?: unknown; id?: string }
 
 // Shared render for editor canvas + RSC. The editor's richtext field transforms
-// stored content into a React element for the canvas; the RSC path receives raw
-// TipTap JSON and converts it to HTML with heading ids injected for the TOC.
+// stored content into a React element for the canvas; the RSC path receives the
+// raw stored value (TipTap JSON, or an HTML string from an older editor save)
+// and converts it to HTML with heading ids injected for the TOC.
 export function GazetteProse(props: GazetteProseProps) {
   const { content } = props
   if (!content) {
@@ -14,8 +15,7 @@ export function GazetteProse(props: GazetteProseProps) {
   if (React.isValidElement(content)) {
     return <div className="gz-prose">{content}</div>
   }
-   
-  const html = renderProseHtml(content as any)
+  const html = renderProseHtml(content)
   return <div className="gz-prose" dangerouslySetInnerHTML={{ __html: html }} />
 }
 

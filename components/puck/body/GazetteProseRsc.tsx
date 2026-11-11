@@ -1,5 +1,4 @@
 import React from 'react'
-import type { JSONContent } from '@tiptap/core'
 import { renderProseHtml } from '@/modules/gazette/lib/prose'
 import { getHeadingIdsForBlock } from '@/modules/gazette/lib/toc'
 import type { TocHeading } from '@/modules/gazette/lib/toc'
@@ -18,7 +17,7 @@ export function makeGazetteProseRsc(headings: TocHeading[]) {
     const { content, id = '' } = props
     if (!content || React.isValidElement(content)) return <GazetteProse {...props} />
     const ids = getHeadingIdsForBlock(headings, id)
-    const html = sanitizeRichText(renderProseHtml(content as JSONContent, ids))
+    const html = sanitizeRichText(renderProseHtml(content, ids))
     return <div className="gz-prose" dangerouslySetInnerHTML={{ __html: html }} />
   }
 }
