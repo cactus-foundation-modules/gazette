@@ -13,4 +13,13 @@ describe('Gazette post editor', () => {
     expect(src).toContain("import { registerEditorFields } from '@/lib/puck/fields/editor'")
     expect(src).toMatch(/^registerEditorFields\(\)$/m)
   })
+
+  // With the iframe off, Puck's viewport stays at its 360px default unless told
+  // otherwise, and core's per-device fields then edit the mobile value only.
+  it('starts the per-device fields on desktop', () => {
+    const src = readFileSync(join(__dirname, 'PostEditor.tsx'), 'utf8')
+    expect(src).toContain('iframe={{ enabled: false }}')
+    expect(src).toContain('ui={DESKTOP_START_UI}')
+    expect(src).toMatch(/current: \{ width: Math\.max\(1280, getResponsiveBreakpoints\(\)\.tablet \+ 1\)/)
+  })
 })

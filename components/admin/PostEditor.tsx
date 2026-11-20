@@ -10,6 +10,7 @@ import { createBackLinkOverride } from '@/lib/puck/tabs/headerBackLinkOverride'
 import { EditorDirtyProvider, useEditorDirtyState } from '@/lib/puck/tabs/editorDirtyState'
 import OutlineTree from '@/lib/puck/outline/OutlineTree'
 import { registerEditorFields } from '@/lib/puck/fields/editor'
+import { getResponsiveBreakpoints } from '@/lib/puck/responsiveValue'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { bodyEditorConfig } from '@/modules/gazette/components/puck/body/bodyEditorConfig'
 import type { GazettePost, GazetteTag, GazetteSeries, PostUrlStyle, PuckData } from '@/modules/gazette/lib/types'
@@ -26,6 +27,20 @@ import { PostEditorProvider, usePostEditor, type PostEditorFields, type PostPubl
 // ones. Without this the core Video block's aspect ratio, max width, alignment and
 // padding fields showed as empty rows in the post editor's sidebar.
 registerEditorFields()
+
+// Core's per-device fields (aspect ratio, max width, alignment) edit whichever
+// device Puck's current viewport width falls in. With the iframe off Puck never
+// picks a viewport, so it sits on its default of 360px - a phone - and every such
+// field silently edited the MOBILE value while looking like the only one. Start on
+// desktop, the same width core's own device buttons use. The canvas stays full
+// width either way: with the iframe off Puck ignores this width for layout.
+const DESKTOP_START_UI = {
+  viewports: {
+    current: { width: Math.max(1280, getResponsiveBreakpoints().tablet + 1), height: 'auto' as const },
+    options: [],
+    controlsVisible: true,
+  },
+}
 
 type Props = {
   post: GazettePost & { tagIds: string[] }
@@ -395,6 +410,7 @@ export default function PostEditor({ post, tags, series, authors, currentUserId,
                 onPublish={saveNow}
                 headerTitle={fields.title || 'Untitled post'}
                 iframe={{ enabled: false }}
+                ui={DESKTOP_START_UI}
               />
             )}
           </div>
