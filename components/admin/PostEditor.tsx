@@ -9,6 +9,7 @@ import { createTabbedFieldsOverride } from '@/lib/puck/tabs/TabbedFieldsOverride
 import { createBackLinkOverride } from '@/lib/puck/tabs/headerBackLinkOverride'
 import { EditorDirtyProvider, useEditorDirtyState } from '@/lib/puck/tabs/editorDirtyState'
 import OutlineTree from '@/lib/puck/outline/OutlineTree'
+import { registerEditorFields } from '@/lib/puck/fields/editor'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { bodyEditorConfig } from '@/modules/gazette/components/puck/body/bodyEditorConfig'
 import type { GazettePost, GazetteTag, GazetteSeries, PostUrlStyle, PuckData } from '@/modules/gazette/lib/types'
@@ -19,6 +20,12 @@ import {
 } from '@/modules/gazette/lib/editor-panels'
 import { buildPostRootFields } from './PostSettingsFields'
 import { PostEditorProvider, usePostEditor, type PostEditorFields, type PostPublishAction } from './postEditorContext'
+
+// Core's custom field widgets (responsive selects, unit values, padding) are
+// server-safe stand-ins that render nothing until the editor registers the real
+// ones. Without this the core Video block's aspect ratio, max width, alignment and
+// padding fields showed as empty rows in the post editor's sidebar.
+registerEditorFields()
 
 type Props = {
   post: GazettePost & { tagIds: string[] }
