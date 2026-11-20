@@ -4,6 +4,7 @@ import { gazetteCodeFieldDef } from './GazetteCode'
 import { GazetteCodeRsc } from './GazetteCodeRsc'
 import { gazetteImageRscFieldDef } from './GazetteImage'
 import { gazetteDividerFieldDef } from './GazetteDivider'
+import { gazetteVideoRscFieldDef } from './GazetteVideo'
 import type { TocHeading } from '@/modules/gazette/lib/toc'
 
 // Built per-post (not a static export) because GazetteProse's RSC render needs
@@ -14,7 +15,7 @@ export function makeBodyRscConfig(headings: TocHeading[]) {
     categories: {
       postContent: {
         title: 'Post content',
-        components: ['GazetteProse', 'GazettePullQuote', 'GazetteCode', 'GazetteImage', 'GazetteDivider'],
+        components: ['GazetteProse', 'GazettePullQuote', 'GazetteCode', 'GazetteImage', 'VideoEmbed', 'GazetteDivider'],
         defaultExpanded: true,
       },
     },
@@ -23,6 +24,7 @@ export function makeBodyRscConfig(headings: TocHeading[]) {
       GazettePullQuote: gazettePullQuoteFieldDef,
       GazetteCode: { ...gazetteCodeFieldDef, render: GazetteCodeRsc },
       GazetteImage: gazetteImageRscFieldDef,
+      VideoEmbed: gazetteVideoRscFieldDef,
       GazetteDivider: gazetteDividerFieldDef,
     },
      
